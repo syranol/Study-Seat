@@ -1,0 +1,29 @@
+{
+    "name": "studyseat",
+    "version": "1.0.0",
+    "description": "A website that finds and manages places to study in a particular area by leveraging the Google Maps API",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start-dev": "nodemon --config \"./util/nodemon.json\""
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/JohnYoon13/StudySeat.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/JohnYoon13/StudySeat/issues"
+    },
+    "homepage": "https://github.com/JohnYoon13/StudySeat#readme",
+    "devDependencies": {
+        "nodemon": "^1.19.4",
+        "ts-node": "^8.4.1",
+        "typescript": "^3.6.4"
+    },
+    "dependencies": {
+        "@types/express": "^4.17.1",
+        "express": "^4.17.1"
+    }
+}
