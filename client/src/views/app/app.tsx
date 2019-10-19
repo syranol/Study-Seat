@@ -16,7 +16,7 @@ class App extends Component {
                     </div>
                 </header>
                 <div className="App-body">
-                    <div className="d-flex flex-row">
+                    <div className="d-flex flex-column justify-items-center">
                         <MapFrame /> 
                     </div>
                 </div>

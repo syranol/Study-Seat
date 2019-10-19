@@ -12,7 +12,7 @@ class MapFrame extends Component {
         return (
             <div id="google-map"
                 ref={this.googleMapHandle}
-                style={{width:"160vh", height:"60vh"}}>
+                style={{width:"68vw", height:"74vh"}}>
             </div>)
     }
 
@@ -34,25 +34,12 @@ class MapFrame extends Component {
                         lat: p.coords.latitude,
                         lng: p.coords.longitude
                     };        
-                    
-            
 
                     (this.infoWindow as google.maps.InfoWindow).setPosition(position);
                     (this.infoWindow as google.maps.InfoWindow).setContent('Your location!');
                     (this.infoWindow as google.maps.InfoWindow).open(this.googleMap);
                     (this.googleMap as google.maps.Map).setCenter(position);
                 }, async () => {
-
-                    await fetch("/",  {
-                        method: "post",
-                        headers: {
-                            "Accept": "application/json",
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            hello: "A"
-                        })
-                    });
                     this.handleLocationError('Geolocation service failed', (this.googleMap as google.maps.Map).getCenter());
                 });
             } else {

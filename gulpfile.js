@@ -36,7 +36,7 @@ gulp.task("build:client", (done) => {
  */
 gulp.task("browser:reload", (done) => {
     browserSync.reload();
-    done()
+    done();
 });
 
 /**

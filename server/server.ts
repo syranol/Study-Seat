@@ -35,8 +35,7 @@ export class StudySeatServer extends Express {
             res.send({ api_key: process.env.API_KEY });
         });
 
-
-
+        /** for debugging client from mobile devices */
         this.post("/", (req: any, res: any) => {
             console.log(req.body);
             res.end();
