@@ -3,7 +3,8 @@
     "compilerOptions": {
         "module": "commonjs",
         "strict": true,
-        "baseUrl": "./",
+        "baseUrl": "server",
+        "rootDir": ".",
         "outDir": "build",
         "sourceMap": true,
         "removeComments": true,
@@ -20,10 +21,11 @@
         ]
     },
     "include": [
-        "./src/**/*.ts"
+        "server",
+        "lib"
     ],
     "exclude": [
-        "./src/**/*.spec.ts",
-        "./src/client/"
+        "./server/**/*.spec.ts",
+        "./client/"
     ]
-  }
+}
