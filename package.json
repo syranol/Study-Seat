@@ -4,6 +4,9 @@
     "description": "A website that finds and manages places to study in a particular area by leveraging the Google Maps API",
     "main": "index.js",
     "scripts": {
+        "build": "npm run build-client; npm run build-server",
+        "build-client": "cd client && npm run build",
+        "build-server": "npm install && tsc -p .",
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "node build/server/index.js",
         "start-dev": "nodemon --inspect build/server/index.js --watch build --ignore node_modules"

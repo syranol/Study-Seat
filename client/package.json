@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "start": "react-scripts start",
-        "build": "react-scripts build; rm -rf ../build/client; mkdir ../build/client; mv build/* ../build/client/",
+        "build": "npm install; react-scripts build; rm -rf ../build/client; mkdir ../build/client; mv build/* ../build/client/",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "watch": "cra-build-watch"
