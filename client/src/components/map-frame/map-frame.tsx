@@ -12,7 +12,7 @@ class MapFrame extends Component {
         return (
             <div id="google-map"
                 ref={this.googleMapHandle}
-                style={{width:"68vw", height:"74vh"}}>
+                style={{width:"58vw", height:"64vh"}}>
             </div>)
     }
 

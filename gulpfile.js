@@ -34,7 +34,7 @@ gulp.task("build:client", (done) => {
     }, done);
 });
 gulp.task("compile:client", (done) => {
-    startWorker("react-scripts", ["build"], {
+    startWorker("npm", ["run", "compile"], {
         cwd: path.join(__dirname, "./client/")
     }, done);
 });

@@ -21,3 +21,11 @@ code {
     --med-gray: #979090;
     --light-gray: #d1c9c9;
 }
+
+.btn-default {
+    background-color: var(--key-lime)
+}
+
+input.search-input {
+    width: 300px;
+}
