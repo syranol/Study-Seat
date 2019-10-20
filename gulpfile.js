@@ -10,11 +10,14 @@ const dotenv = require("dotenv").config();
  * watch client and server build directories for new compiled output, reload browser
  */
 gulp.task("watch", () => {
-    gulp.watch(["server/**/*.ts"], gulp.series("build:server", "browser:reload"));
-    gulp.watch(["client/src/**/*"], gulp.series("build:client", "browser:reload"));
+    gulp.watch(["server/**/*.ts"], gulp.series("compile:server", "browser:reload"));
+    gulp.watch(["client/src/**/*"], gulp.series("compile:client", "browser:reload"));
 });
 
-gulp.task("build:server", () => {
+gulp.task("build:server", (done) => {
+    startWorker("npm", ["run", "build"], { }, done);
+});
+gulp.task("compile:server", () => {
     return gulp.src("server/**/*.ts")
         .pipe(gulpSourcemap.init())
         .pipe(tsProject())
@@ -27,6 +30,11 @@ gulp.task("build:server", () => {
  */
 gulp.task("build:client", (done) => {
     startWorker("npm", ["run", "build"], {
+        cwd: path.join(__dirname, "./client/")
+    }, done);
+});
+gulp.task("compile:client", (done) => {
+    startWorker("react-scripts", ["build"], {
         cwd: path.join(__dirname, "./client/")
     }, done);
 });

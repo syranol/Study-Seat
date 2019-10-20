@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './app.scss';
 import MapFrame from '../../components/map-frame/map-frame';
 
@@ -16,9 +15,15 @@ class App extends Component {
                     </div>
                 </header>
                 <div className="App-body">
-                    <div className="d-flex flex-column justify-items-center">
+                    <div className="d-flex flex-row align-items-center">
                         <MapFrame /> 
+                        <div>
+                            <div className="form-group">
+                                <input></input><button className="btn btn-default">BUTTON</button>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </div>);
     }
