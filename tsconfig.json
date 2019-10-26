@@ -18,8 +18,12 @@
         ],
         "typeRoots": [
             "node_modules/@types"
-        ]
+        ],
+        "paths": {
+            
+        }
     },
+    
     "include": [
         "server",
         "lib"

@@ -6,6 +6,12 @@ export const statePrototype = {
             lng: null
         }
     },
-    cafe: false,
-    library: false,
+    placeTypes: {
+        cafe: false,
+        library: false,
+    },
+    /** 
+     * radius, in meters. cannot be more than 50000 
+     */
+    radius: 10000
 };

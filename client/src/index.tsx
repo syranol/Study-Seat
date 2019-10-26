@@ -21,7 +21,10 @@ import 'index.scss';
 import App from './views/app/app';
 import * as serviceWorker from 'serviceWorker';
 
-
+/**
+ * render the root element, wrapped in a provider which allows global access to the 
+ *  redux store
+ */
 ReactDOM.render(
     <Provider store={store}>
         <App />

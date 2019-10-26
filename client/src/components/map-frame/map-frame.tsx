@@ -3,8 +3,12 @@ import MapForm from "../map-form/map-form"
 import { connect } from "react-redux";
 import { geolocationChanged, locationNameUpdated } from "./actions";
 
+// TODO: persist zoom level
+
 interface IMapFrameProps {
     locationName: string,
+    radius: number,
+    placeTypesSelected: string[],
     dispatch: (action) => void
 }
 
@@ -31,40 +35,53 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
     private placesService: google.maps.places.PlacesService | undefined;
     private geocodingService: google.maps.Geocoder | undefined; 
 
+    private markers: google.maps.Marker[] | undefined = [];
+
     constructor(props) {
         super(props);
     }
-
-
-    handleLocationNameChanged = (location) => {
-        if (this.placesService) {
-            this.placesService.findPlaceFromQuery({
-                query: location,
-                fields: ["geometry.location"],
-            }, (res) => {
-                if (this.googleMap) {
-                    const newGeolocation = {
-                        lat: (res as IReverseGeocodeResult[])[0].geometry.location.lat(),
-                        lng: (res as IReverseGeocodeResult[])[0].geometry.location.lng()
-                    }
-                    this.googleMap.panTo(newGeolocation);
-                    this.props.dispatch(geolocationChanged(newGeolocation))
-                    this.populateMap(newGeolocation);
-                }
-            });
-        }
-    }
+    
+    // TODO: ideally this debounce could be made obsolete
+    private debounceComponentDidUpdate: boolean = false;
 
     componentDidUpdate(prevPropSnapshot): void {
+        let locationChanged = false;
         if (this.props.locationName !== prevPropSnapshot.locationName) {
-            this.handleLocationNameChanged(this.props.locationName);
+            locationChanged = true;
+        }
+        let placesSelectedChanged = false;
+        if (this.props.placeTypesSelected !== prevPropSnapshot.placeTypesSelected) {
+            placesSelectedChanged = true;
+        }
+        if (locationChanged || placesSelectedChanged) {
+            if (this.placesService && !this.debounceComponentDidUpdate) {
+                this.debounceComponentDidUpdate = true;
+                setTimeout(() => this.debounceComponentDidUpdate = false, 100);
+
+                this.placesService.findPlaceFromQuery({
+                    query: this.props.locationName,
+                    fields: ["geometry.location"],
+                }, (res) => {
+                    if (this.googleMap && res) {
+                        const newGeolocation = {
+                            lat: (res as IReverseGeocodeResult[])[0].geometry.location.lat(),
+                            lng: (res as IReverseGeocodeResult[])[0].geometry.location.lng()
+                        }
+                        this.googleMap.panTo(newGeolocation);
+                        this.props.dispatch(geolocationChanged(newGeolocation))
+                        this.populateMap(newGeolocation);
+                    }
+                });
+            } 
         }
     }
 
     render() {
         return (
             <div style={{height: "100%"}}>
-                <MapForm></MapForm>
+                <div style={{height: "20%"}}>
+                    <MapForm></MapForm>
+                </div>
                 <div id="google-map" style={{height: "100%"}}
                     ref={this.googleMapHandle}>
                 </div>
@@ -127,26 +144,51 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
     }
 
     private populateMap = (position) => {
-        console.log("POPULATE MAP");
-        const request = {
-            location: position,
-            radius: 5000,
-            types: ['cafe']
-        };
-        (this.placesService as google.maps.places.PlacesService).nearbySearch(request, (res, status) => {
-            if (status === google.maps.places.PlacesServiceStatus.OK) {
-                for (let i = 0; i < res.length; i++) {
-                    const place = res[i] as google.maps.places.PlaceResult;
-                    if (place.geometry !== undefined) {
-                        const marker = new google.maps.Marker({
-                            map: this.googleMap,
-                            title: place.name,
-                            position: place.geometry.location
-                        });
+        // TODO: why is this being called twice at page load
+        // TODO: clear previous markers
+
+        this.clearMarkers();
+
+        this.props.placeTypesSelected.map((type) => {
+            const request = {
+                location: position,
+                radius: this.props.radius,
+                types: [type]
+            };
+            if (this.placesService) {
+                this.placesService.nearbySearch(request, (res, status) => {
+                    if (status === google.maps.places.PlacesServiceStatus.OK) {
+                        for (let i = 0; i < res.length; i++) {
+                            const place = res[i] as google.maps.places.PlaceResult;
+                            if (place.geometry !== undefined 
+                                && place.types !== undefined
+                                /**
+                                 * it seems the Google Places API returns hotel information when no place
+                                 *  types are supplies... This is a hack to circumvent this 
+                                 */
+                                && place.types.filter((x) => {
+                                    return this.props.placeTypesSelected.indexOf(x) !== -1
+                                }).length > 0) {
+
+                                (this.markers as google.maps.Marker[]).push(new google.maps.Marker({
+                                    map: this.googleMap,
+                                    title: place.name,
+                                    position: place.geometry.location
+                                }));
+                            }
+                        }
                     }
-                }
-            }
+                });
+            }   
         });
+    }
+
+    private clearMarkers(): void {
+        if (this.markers) {
+            for (const marker of this.markers) {
+                marker.setMap(null);
+            }
+        }
     }
 
     private handleLocationError (content, position) {
@@ -158,7 +200,14 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
 
 const mapStateToProps = (state, ownProps) => {
     return {
-        locationName: state.location.locationName
+        locationName: state.location.locationName,
+        radius: state.radius,
+        placeTypesSelected: Object.keys(state.placeTypes)
+            .filter(key => state.placeTypes[key])
+            .map((key) => {
+                if (state.placeTypes[key]) 
+                    return key;
+            })
     }
 }
 
