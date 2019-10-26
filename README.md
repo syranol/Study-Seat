@@ -37,3 +37,5 @@ lib/              # Code shared by client and server
 # References
  * https://levelup.gitconnected.com/setting-up-a-full-stack-typescript-application-featuring-express-and-react-ccfe07f2ea47
  * https://engineering.universe.com/building-a-google-map-in-react-b103b4ee97f1
+ * https://developers.google.com/places/web-service/intro
+ * https://developers.google.com/maps/documentation/javascript/tutorial

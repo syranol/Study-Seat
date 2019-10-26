@@ -1,4 +1,4 @@
-body {
+html, body {
     height: 100%;
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -6,6 +6,7 @@ body {
         sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow: hidden;
 }
 
 code {
@@ -19,11 +20,30 @@ code {
     --turquoise: #09d3ac;
     --charcoal: #544e5a;
     --med-gray: #979090;
-    --light-gray: #d1c9c9;
+    --light-gray: #e7e2e2;
+    --eggshell: #eeebeb;
+}
+
+input {
+    background-color: var(--eggshell);
 }
 
 .btn-default {
-    background-color: var(--key-lime)
+    background-color: var(--light-gray)
+}
+
+.flex-container {
+    display: flex;
+}
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
 }
 
 input.search-input {
