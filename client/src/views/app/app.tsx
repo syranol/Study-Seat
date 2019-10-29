@@ -1,27 +1,56 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './app.scss';
 import MapFrame from '../../components/map-frame/map-frame';
+import { connect } from "react-redux";
+import { initialize } from 'state/actions/initialize.action';
 
 /**
- * renders the main view
+ * This component renders the main view, including the MapFrame
  */
-class App extends Component {
+class App extends Component<any, any> {
+
+    constructor(props) {
+        super(props);
+        /**
+         * on instantiation, load cached state (stored in browser localStorage)
+         */
+        this.loadStateFromLocalStorage();
+    }
+
+    /**
+     * load cached state from browser localStorage
+     *  - this allows persistent state across page reloads
+     */
+    private loadStateFromLocalStorage(): void {
+        const cachedState = localStorage.getItem('studySeatState');
+        if (cachedState === null) {
+            return undefined;
+        }
+        /** 
+         * dispatch an initialization action to the store
+         *  - passed through reducers to generate initial state
+         */
+        this.props.dispatch(initialize(JSON.parse(cachedState)));
+    }
+
+    /**
+     * render the JSX template
+     */
     render() {
         return (
             <div className="App">
-                <header className="App-header">
-                    <div className="jumbotron">                    
-                        <h1>Study Seat</h1>
-                    </div>
+                <header className="jumbotron container">      
+                    <h1>Study Seat</h1>
                 </header>
-                <div className="App-body">
-                    <div className="d-flex flex-column justify-items-center">
-                        <MapFrame /> 
-                    </div>
+                <div className="App-body"> 
+                    <MapFrame /> 
                 </div>
             </div>);
     }
 }
 
-export default App;
+/**
+ * connect() allows components to connect to the global redux datastore
+ *  - can map properties from store state to component props
+ */
+export default connect(null, null)(App);

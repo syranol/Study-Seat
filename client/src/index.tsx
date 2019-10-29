@@ -11,12 +11,29 @@ import $ from 'jquery';
 import Popper from 'popper.js';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 
+/**
+ * import React Redux bindings
+ */
+import { Provider } from "react-redux";
+import store from "state/store/store";
+
 import 'index.scss';
 import App from './views/app/app';
 import * as serviceWorker from 'serviceWorker';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+/**
+ * render the root element, wrapped in a provider which allows global access to the 
+ *  redux store
+ */
+ReactDOM.render(
+    <Provider store={store}>
+        <App />
+    </Provider>, 
+    document.getElementById('root'));
 
 // Toggle service worker (register or unregister). Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
+
+
+
