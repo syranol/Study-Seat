@@ -1,7 +1,7 @@
 
 import { statePrototype } from "./state.prototype";
 import { 
-    CAFE_CHECKBOX_TOGGLED, LIBRARY_CHECKBOX_TOGGLED, LOCATION_FORM_SUBMITTED 
+    CAFE_CHECKBOX_TOGGLED, LIBRARY_CHECKBOX_TOGGLED, LOCATION_FORM_SUBMITTED, BOOK_STORE_CHECKBOX_TOGGLED 
 } from "../../components/map-form/actions";
 import { 
     GEOLOCATION_CHANGED, LOCATION_NAME_UPDATED 
@@ -45,6 +45,15 @@ export default function rootReducer(previousState, action) {
                 })
             });
         }
+        case BOOK_STORE_CHECKBOX_TOGGLED: {
+            /** assign placeTypes.library to action payload */
+            const prevPlacesSelected = previousState.placeTypes;
+            return Object.assign({ }, previousState, {
+                placeTypes: Object.assign(prevPlacesSelected, {
+                    book_store: action.payload
+                })
+            });
+        };
         case LOCATION_FORM_SUBMITTED:
         case LOCATION_NAME_UPDATED: {
             /** update location name */

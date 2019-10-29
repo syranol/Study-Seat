@@ -79,9 +79,10 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
     render() {
         return (
             <div style={{height: "100%"}}>
-                <div style={{height: "20%"}}>
+                <div style={{height: "15%"}}>
                     <MapForm></MapForm>
                 </div>
+                
                 <div id="google-map" style={{height: "100%"}}
                     ref={this.googleMapHandle}>
                 </div>
