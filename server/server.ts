@@ -3,7 +3,7 @@ import { IHttpRequest, IHttpResponse } from '../lib/interface/http.interface';
 const Express = require("express");
 
 export class StudySeatServer extends Express {
-    private clientBundlePath = join(__dirname, "../client");
+     private clientBundlePath = join(__dirname, "../client");
 
     constructor() {
         super();
@@ -31,7 +31,7 @@ export class StudySeatServer extends Express {
         });
 
         this.get("/api-key", (req: IHttpRequest, res: IHttpResponse) => {
-            
+
             res.send({ api_key: process.env.API_KEY });
         });
 

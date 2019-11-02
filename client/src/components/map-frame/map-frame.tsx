@@ -6,7 +6,7 @@ import { geolocationChanged, locationNameUpdated } from "./actions";
 // TODO: persist zoom level
 
 /**
- * defines the props on the MapFrameComponent (mapped to global Redux state below 
+ * defines the props on the MapFrameComponent (mapped to global Redux state below
  *  in mapStateToProps())
  * @param locationName the human readable name of the current location being seached
  * @param radius the current search radius
@@ -28,16 +28,16 @@ interface IMapFrameState {
 }
 
 /**
- * defines the interface for a reverse geocoding result returned from Google maps 
+ * defines the interface for a reverse geocoding result returned from Google maps
  *  geocoding API
  */
-interface IReverseGeocodeResult { 
-    geometry: { 
-        location: { 
+interface IReverseGeocodeResult {
+    geometry: {
+        location: {
             lat: () => number,
             lng: () => number
-        } 
-    } 
+        }
+    }
 }
 
 /**
@@ -59,7 +59,7 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
      * Service instances
      */
     private placesService: google.maps.places.PlacesService | undefined;
-    private geocodingService: google.maps.Geocoder | undefined; 
+    private geocodingService: google.maps.Geocoder | undefined;
 
     /**
      * array containing all markers currently on the map
@@ -69,7 +69,7 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
     constructor(props) {
         super(props);
     }
-    
+
     // TODO: ideally this debounce could be made obsolete...
     //          - necessary for now, or else too many redundant requests made
     private debounceComponentDidUpdate: boolean = false;
@@ -91,7 +91,7 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
             placesSelectedChanged = true;
         }
         /**
-         * if relevant changes occurred, placesService is defined, and method not currently debounced, 
+         * if relevant changes occurred, placesService is defined, and method not currently debounced,
          *  get new geolocation from new location name
          */
         if (locationChanged || placesSelectedChanged) {
@@ -127,7 +127,7 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
                         this.populateMap(newGeolocation);
                     }
                 });
-            } 
+            }
         }
     }
 
@@ -162,7 +162,7 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
                     var position = {
                         lat: p.coords.latitude,
                         lng: p.coords.longitude
-                    };        
+                    };
                     this.props.dispatch(geolocationChanged(position));
 
                     /**
@@ -208,6 +208,7 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
                 lng: 30
             },
             disableDefaultUI: true  // TODO: what does this do?
+
         });
     }
 
@@ -232,29 +233,49 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
                     if (status === google.maps.places.PlacesServiceStatus.OK) {
                         for (let i = 0; i < res.length; i++) {
                             const place = res[i] as google.maps.places.PlaceResult;
-                            if (place.geometry !== undefined 
+                            if (place.geometry !== undefined
                                 && place.types !== undefined
                                 /**
                                  * it seems the Google Places API returns hotel information when no place
-                                 *  types are supplies... This is a hack to circumvent this 
+                                 *  types are supplies... This is a hack to circumvent this
                                  */
                                 && place.types.filter((x) => {
                                     return this.props.placeTypesSelected.indexOf(x) !== -1
                                 }).length > 0) {
 
-                                /** 
-                                 * place a new marker on map, and store a reference to it in this.markers 
+                                /**
+                                 * Place a new marker on map, and store a reference to it in this.markers
                                  */
-                                (this.markers as google.maps.Marker[]).push(new google.maps.Marker({
+
+                                 const newMarker = new google.maps.Marker({
                                     map: this.googleMap,
                                     title: place.name,
                                     position: place.geometry.location
-                                }));
+                                 });
+
+                                 //Initiates the content of the info window
+                                 const infoWindow = new google.maps.InfoWindow({
+                                   content: place.name
+                                 });
+
+                                //Listener so only clicked marker will show info
+                                newMarker.addListener("click", () => {
+                                  infoWindow.open(this.googleMap, newMarker);
+                                });
+
+                                //google.maps.event.addListener(newMarker, 'click', )
+                                //google.maps.event.addListener(newMarker, 'click', function() {
+
+                                //infoWindow.open(newMarker.map, newMarker);
+                                //});
+
+
+
                             }
                         }
                     }
                 });
-            }   
+            }
         });
     }
 
@@ -288,7 +309,7 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
                 <div style={{height: "15%"}}>
                     <MapForm></MapForm>
                 </div>
-                
+
                 <div id="google-map" style={{height: "100%"}}
                     ref={this.googleMapHandle}>
                 </div>
@@ -306,7 +327,7 @@ const mapStateToProps = (state, ownProps) => {
         placeTypesSelected: Object.keys(state.placeTypes)
             .filter(key => state.placeTypes[key])
             .map((key) => {
-                if (state.placeTypes[key]) 
+                if (state.placeTypes[key])
                     return key;
             })
     }

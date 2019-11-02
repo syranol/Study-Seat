@@ -26,7 +26,7 @@ class App extends Component<any, any> {
         if (cachedState === null) {
             return undefined;
         }
-        /** 
+        /**
          * dispatch an initialization action to the store
          *  - passed through reducers to generate initial state
          */
@@ -39,11 +39,11 @@ class App extends Component<any, any> {
     render() {
         return (
             <div className="App">
-                <header className="jumbotron container">      
-                    <h1>Study Seat</h1>
+                <header className="jumbotron container">
+                    <h1>StudySeat</h1>
                 </header>
-                <div className="App-body"> 
-                    <MapFrame /> 
+                <div className="App-body">
+                    <MapFrame />
                 </div>
             </div>);
     }
