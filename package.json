@@ -2,7 +2,7 @@
     "name": "studyseat",
     "version": "1.0.0",
     "description": "A website that finds and manages places to study in a particular area by leveraging the Google Maps API",
-    "main": "index.js",
+    "main": "build/server/index.js",
     "scripts": {
         "build": "npm run build-client; npm run build-server",
         "build-client": "cd client && npm run build",
