@@ -228,6 +228,7 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
                     radius: this.props.radius,
                     types: [type]
                 };
+
                 /** perform a search for nearby places of interest */
                 this.placesService.nearbySearch(request, (res, status) => {
                     if (status === google.maps.places.PlacesServiceStatus.OK) {
@@ -255,7 +256,12 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
 
                                  //Initiates the content of the info window
                                  const infoWindow = new google.maps.InfoWindow({
-                                   content: place.name
+                                    maxWidth: 200, 
+                                   content: place.name +'<br/>'+ 
+                                   "RATING: " + place.rating +'<br/>'+ 
+                                   "OPEN: " + place.opening_hours.open_now +'<br/>'+ 
+                                   "PRICE LEVEL(out of 5): " + place.price_level +'<br/>'+
+                                   "ADDRESS: " + place.vicinity
                                  });
 
                                 //Listener so only clicked marker will show info
