@@ -256,10 +256,10 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
 
                                  //Initiates the content of the info window
                                  const infoWindow = new google.maps.InfoWindow({
-                                    maxWidth: 200, 
-                                   content: place.name +'<br/>'+ 
-                                   "RATING: " + place.rating +'<br/>'+ 
-                                   "OPEN: " + place.opening_hours.open_now +'<br/>'+ 
+                                    maxWidth: 200,
+                                   content: place.name +'<br/>'+
+                                   "RATING: " + place.rating +'<br/>' +
+                                   "OPEN: " + place.opening_hours.open_now +'<br/>'+
                                    "PRICE LEVEL(out of 5): " + place.price_level +'<br/>'+
                                    "ADDRESS: " + place.vicinity
                                  });
