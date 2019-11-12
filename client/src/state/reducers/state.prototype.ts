@@ -21,5 +21,11 @@ export const statePrototype = {
     /** 
      * radius, in meters. cannot be more than 50000 
      */
-    radius: 10000
+    radius: 10000,
+    /**
+     * login / authentication
+     */
+    authentication: {
+        
+    }
 };

@@ -3,8 +3,13 @@ import { IHttpRequest, IHttpResponse } from '../lib/interface/http.interface';
 const Express = require("express");
 
 export class StudySeatServer extends Express {
+<<<<<<< Updated upstream
      private clientBundlePath = join(__dirname, "../client");
 
+=======
+    private clientBundlePath = join(__dirname, "../client");
+    // private clientBundlePath = join(process.cwd(), "client/build");
+>>>>>>> Stashed changes
     constructor() {
         super();
 

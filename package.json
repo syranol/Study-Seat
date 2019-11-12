@@ -37,6 +37,7 @@
         "express": "^4.17.1",
         "react-bootstrap": "^1.0.0-beta.14",
         "react-redux": "^7.1.1",
+        "react-router-dom": "^5.1.2",
         "redux": "^4.0.4"
     }
 }

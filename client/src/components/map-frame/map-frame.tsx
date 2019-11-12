@@ -1,4 +1,7 @@
-import React, { Component, createRef, RefObject } from "react";
+import React, { 
+    Component, createRef, RefObject 
+} from "react";
+import { Redirect } from "react-router-dom";
 import MapForm from "../map-form/map-form"
 import { connect } from "react-redux";
 import { geolocationChanged, locationNameUpdated } from "./actions";
@@ -188,8 +191,13 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
                      * populate map with markers
                      */
                     await this.populateMap(position);
-                }, async () => {
+                }, async (e) => {
+                    console.error(e);
                     this.handleLocationError('Geolocation service failed', (this.googleMap as google.maps.Map).getCenter());
+                }, {
+                    enableHighAccuracy: true,
+                    maximumAge: 100000,
+                    timeout: 100000
                 });
             } else {
                 this.handleLocationError('No geolocation available.', (this.googleMap as google.maps.Map).getCenter());
@@ -259,7 +267,7 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
                                     maxWidth: 200, 
                                    content: place.name +'<br/>'+ 
                                    "RATING: " + place.rating +'<br/>'+ 
-                                   "OPEN: " + place.opening_hours.open_now +'<br/>'+ 
+                                   "OPEN: " + (place.opening_hours as any).open_now +'<br/>'+ 
                                    "PRICE LEVEL(out of 5): " + place.price_level +'<br/>'+
                                    "ADDRESS: " + place.vicinity
                                  });
@@ -310,6 +318,9 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
      * Render the JSX template on the DOM
      */
     render() {
+        // if (true) {
+        //     return <Redirect to="/login"></Redirect>
+        // }
         return (
             <div style={{height: "100%"}}>
                 <div style={{height: "15%"}}>

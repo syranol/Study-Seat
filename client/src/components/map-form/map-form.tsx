@@ -130,7 +130,7 @@ class MapForm extends Component<IMapFormProps, { }> {
 
     render() {
         return(            
-        <div className="container" style={{width:"46%"}}>
+        <div className="container" style={{width:"38%"}}>
             <div className="flex-row" style={{
                     alignItems: "center", 
                     justifyContent: "space-around",

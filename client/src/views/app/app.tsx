@@ -1,8 +1,13 @@
 import React, { Component } from 'react';
+import {
+    Switch, Route, HashRouter
+} from "react-router-dom";
 import './app.scss';
-import MapFrame from '../../components/map-frame/map-frame';
 import { connect } from "react-redux";
 import { initialize } from 'state/actions/initialize.action';
+import MapFrame from 'components/map-frame/map-frame';
+import LoginForm from 'components/login-form/login-form';
+import RegisterForm from 'components/register/register-form';
 
 /**
  * This component renders the main view, including the MapFrame
@@ -43,7 +48,16 @@ class App extends Component<any, any> {
                     <h1>StudySeat</h1>
                 </header>
                 <div className="App-body">
-                    <MapFrame />
+                    <HashRouter>
+                        <Switch>
+                            <Route path="/login" component={LoginForm}>
+                            </Route>
+                            <Route path="/register" component={RegisterForm}>
+                            </Route>
+                            <Route path="/" component={MapFrame}>
+                            </Route>
+                        </Switch>
+                    </HashRouter>
                 </div>
             </div>);
     }
