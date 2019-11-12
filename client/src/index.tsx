@@ -1,5 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { 
+    Route, Router, browserHistory,
+    IndexRedirect
+} from "react-router-dom";
+import LoginForm from "components/login-form/login-form";
+import RegisterForm from "components/register-form/register-form";
 
 /**
  * import the bootstrap library (referenced this link)

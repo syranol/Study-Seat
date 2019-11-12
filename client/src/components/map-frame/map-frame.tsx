@@ -6,6 +6,7 @@ import MapForm from "../map-form/map-form"
 import { connect } from "react-redux";
 import { geolocationChanged, locationNameUpdated } from "./actions";
 
+// TODO: fix bug where unchecking checkbox does not cause markers to disappear
 // TODO: persist zoom level
 
 /**

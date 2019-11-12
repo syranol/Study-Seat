@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { Button } from "react-bootstrap";
-import RegisterForm from "components/register/register-form";
 
 /**
  * 
@@ -18,7 +17,16 @@ class LoginForm extends Component<{ }, { }> {
      * called when user clicks submit button
      */
     private submitForm = (): void => {
-        
+
+
+
+        fetch("/login", {
+            method: "POST",
+            body: JSON.stringify({ })
+        }).then((response) => { console.log(response); });
+    
+    
+    
     }
 
     /**
@@ -42,11 +50,12 @@ class LoginForm extends Component<{ }, { }> {
         
     }
 
+    // TODO: implement validation
     render() {
         return(            
             <div className="container" style={{height: "100%", width: "48%"}}>
                 
-                <div className="flex-column" style={{height: "26%", justifyContent: "space-around"}}>
+                <form className="flex-column" style={{height: "26%", justifyContent: "space-around"}}>
                     <h3>Log In</h3>
                     <div className="flex-row" style={{justifyContent: "space-between"}}>
                         <span className="flex-row" style={{width: "25%", justifyContent: "flex-end"}}>
@@ -58,7 +67,7 @@ class LoginForm extends Component<{ }, { }> {
                         <span className="flex-row" style={{width: "25%", justifyContent: "flex-end"}}>
                             Password
                         </span>
-                        <input className="form-control" type="text" style={{width: "66%"}}></input>
+                        <input className="form-control" type="password" style={{width: "66%"}}></input>
                     </div>
                     <div className="flex-row" style={{justifyContent: "flex-end"}}>
                         <Button variant="primary" onClick={this.submitForm} style={{width: "66%"}}>
@@ -71,7 +80,7 @@ class LoginForm extends Component<{ }, { }> {
                         </span>
                         <Link to="/register">Register</Link>
                     </div>
-                </div>
+                </form>
             </div>)
     }
 }

@@ -7,7 +7,7 @@ import { connect } from "react-redux";
 import { initialize } from 'state/actions/initialize.action';
 import MapFrame from 'components/map-frame/map-frame';
 import LoginForm from 'components/login-form/login-form';
-import RegisterForm from 'components/register/register-form';
+import RegisterForm from 'components/register-form/register-form';
 
 /**
  * This component renders the main view, including the MapFrame
