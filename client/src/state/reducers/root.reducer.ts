@@ -10,6 +10,9 @@ import {
     LOGIN_FORM_SUBMITTED
 } from "components/login-form/actions";
 import {
+    LOGOUT_SUBMITTED
+} from "../actions/logout.action";
+import {
     INITIALIZE
 } from "../actions/initialize.action";
 
@@ -83,7 +86,24 @@ export default function rootReducer(previousState, action) {
                     [x]: action.payload[x]
                 });
             });
+            Object.assign(newState.authentication, {
+                isLoggedIn: true
+            });
             return newState;
+        }
+        case LOGOUT_SUBMITTED: {
+            
+            if (action.payload) {
+                const newState = Object.assign({ }, previousState);
+                Object.assign(newState.authentication, {
+                    isLoggedIn: false,
+                    username: null,
+                    token: null
+                })
+                return newState;
+            } else {
+                return previousState;
+            }
         }
         case INITIALIZE: {
             /** handle the initialization action (dispatched at startup) */

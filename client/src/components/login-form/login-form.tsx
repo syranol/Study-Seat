@@ -6,6 +6,7 @@ import { loginFormSubmitted } from "./actions";
 
 interface ILoginFormProps {
     dispatch: (action) => void,
+    isLoggedIn: boolean,
     username: string,
     password: string,
 }
@@ -63,6 +64,7 @@ class LoginForm extends Component<ILoginFormProps, ILoginFormState> {
             this.props.dispatch(loginFormSubmitted({
                 username: data.username
             }));
+
         });
     }
 
@@ -100,6 +102,12 @@ class LoginForm extends Component<ILoginFormProps, ILoginFormState> {
         this.setState({
             username: this.props.username
         });
+
+        if (this.props.isLoggedIn) {
+            this.setState({
+                toMapFrame: true
+            });
+        }
     }
 
     /**
@@ -120,6 +128,8 @@ class LoginForm extends Component<ILoginFormProps, ILoginFormState> {
     // TODO: implement validation
     render() {
         if (this.state.toMapFrame) {
+            console.log("TO MAP FRAME!")
+            setTimeout(() => window.location.reload(), 10)
             return <Redirect to="/"></Redirect>
         }
         return(            
@@ -164,7 +174,8 @@ class LoginForm extends Component<ILoginFormProps, ILoginFormState> {
  */
 const mapStateToProps = (state, ownProps) => {
     return {
-        username: state.authentication.username
+        username: state.authentication.username,
+        isLoggedIn: state.authentication.isLoggedIn
     };
 }
 

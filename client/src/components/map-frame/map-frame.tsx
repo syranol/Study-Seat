@@ -1,12 +1,11 @@
-import React, { 
-    Component, createRef, RefObject 
+import React, {
+    Component, createRef, RefObject
 } from "react";
 import { Redirect } from "react-router-dom";
 import MapForm from "../map-form/map-form"
 import { connect } from "react-redux";
 import { geolocationChanged, locationNameUpdated } from "./actions";
 
-// TODO: fix bug where unchecking checkbox does not cause markers to disappear
 // TODO: persist zoom level
 
 /**
@@ -18,6 +17,7 @@ import { geolocationChanged, locationNameUpdated } from "./actions";
  * @param dispatch reference to the Redux dispatch function
  */
 interface IMapFrameProps {
+    isLoggedIn: boolean,
     locationName: string,
     radius: number,
     placeTypesSelected: string[],
@@ -45,6 +45,23 @@ interface IReverseGeocodeResult {
 }
 
 /**
+ * load google maps script, using API key fetched from server, append script to window
+ */
+let googleMapsScript = document.createElement("script");       
+const scriptLoaded = async (): Promise<boolean> => {
+    const reply = await fetch("/api-key").then(res => res.json());
+    const key = reply["api_key"];
+    googleMapsScript.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`
+    window.document.body.appendChild(googleMapsScript);
+    await new Promise((res, rej) => {
+        googleMapsScript.addEventListener("load", () => {
+            res();
+        });
+    });
+    return true;
+}
+
+/**
  * renders the Google map frame
  */
 class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
@@ -53,6 +70,7 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
      */
     private googleMap: google.maps.Map | undefined;
     private googleMapHandle: RefObject<HTMLDivElement> = createRef();
+    private googleMapsScript: HTMLScriptElement | undefined;
 
     /**
      * Info window used to display messages
@@ -72,6 +90,9 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
 
     constructor(props) {
         super(props);
+        console.log("DID CONSTRUCT")
+
+
     }
 
     // TODO: ideally this debounce could be made obsolete...
@@ -109,8 +130,6 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
          */
         if (locationChanged || placesSelectedChanged) {
             if (this.placesService && !this.debounceComponentDidUpdate) {
-
-                console.log("NEW REQUEST")
 
                 /**
                  * Debounce componentDidUpdate (causes the if statement not to execute again until
@@ -150,71 +169,65 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
      * React lifecycle hook triggered when the component is mounted on the DOM
      */
     async componentDidMount() {
-        /**
-         * load google maps script, using API key fetched from server, append script to window
-         */
-        const googleMapsScript = document.createElement("script");
-        const reply = await fetch("/api-key").then(res => res.json());
-        const key = reply["api_key"];
-        googleMapsScript.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`
-        window.document.body.appendChild(googleMapsScript);
-
+        console.log("DID MOUNT")
+        
         /**
          * when the google maps script loads, create the google map object and info window, instantiate
          *  Google services, get current geolocation from browser
          */
-        googleMapsScript.addEventListener("load", async () => {
-            this.googleMap = this.createGoogleMap();
-            this.infoWindow = new (window as any).google.maps.InfoWindow()
-            this.placesService = new google.maps.places.PlacesService(this.googleMap as google.maps.Map);
-            this.geocodingService = new google.maps.Geocoder() as google.maps.Geocoder;
+        console.log("A");
+        await scriptLoaded();
+        console.log("B")
+        this.googleMap = this.createGoogleMap();
+        this.infoWindow = new (window as any).google.maps.InfoWindow()
+        this.placesService = new google.maps.places.PlacesService(this.googleMap as google.maps.Map);
+        this.geocodingService = new google.maps.Geocoder() as google.maps.Geocoder;
 
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition( async (p) => {
-                    /**
-                     * update geolocation in global Redux store
-                     */
-                    var position = {
-                        lat: p.coords.latitude,
-                        lng: p.coords.longitude
-                    };
-                    this.props.dispatch(geolocationChanged(position));
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition( async (p) => {
+                /**
+                 * update geolocation in global Redux store
+                 */
+                var position = {
+                    lat: p.coords.latitude,
+                    lng: p.coords.longitude
+                };
+                this.props.dispatch(geolocationChanged(position));
 
-                    /**
-                     * update location name based on geolocation value retrieved by browser
-                     */
-                    if (this.geocodingService) {
-                        this.geocodingService.geocode({
-                            location: position,
-                        }, (res) => {
-                            this.props.dispatch(locationNameUpdated(res[0].address_components[3].short_name));
-                        });
-                    }
+                /**
+                 * update location name based on geolocation value retrieved by browser
+                 */
+                if (this.geocodingService) {
+                    this.geocodingService.geocode({
+                        location: position,
+                    }, (res) => {
+                        this.props.dispatch(locationNameUpdated(res[0].address_components[3].short_name));
+                    });
+                }
 
-                    /**
-                     * configure the info window and center the map
-                     */
-                    (this.infoWindow as google.maps.InfoWindow).setPosition(position);
-                    (this.infoWindow as google.maps.InfoWindow).setContent('Your location!');
-                    (this.infoWindow as google.maps.InfoWindow).open(this.googleMap);
-                    (this.googleMap as google.maps.Map).setCenter(position);
+                /**
+                 * configure the info window and center the map
+                 */
+                (this.infoWindow as google.maps.InfoWindow).setPosition(position);
+                (this.infoWindow as google.maps.InfoWindow).setContent('Your location!');
+                (this.infoWindow as google.maps.InfoWindow).open(this.googleMap);
+                (this.googleMap as google.maps.Map).setCenter(position);
 
-                    /**
-                     * populate map with markers
-                     */
-                    await this.populateMap(position);
-                }, async (e) => {
-                    console.error(e);
-                    this.handleLocationError('Geolocation service failed', (this.googleMap as google.maps.Map).getCenter());
-                }, {
-                    enableHighAccuracy: true,
-                    maximumAge: 100000,
-                    timeout: 100000
-                });
-            } else {
-                this.handleLocationError('No geolocation available.', (this.googleMap as google.maps.Map).getCenter());
-            }
-        });
+                /**
+                 * populate map with markers
+                 */
+                await this.populateMap(position);
+            }, async (e) => {
+                console.error(e);
+                this.handleLocationError('Geolocation service failed', (this.googleMap as google.maps.Map).getCenter());
+            }, {
+                enableHighAccuracy: true,
+                maximumAge: 100000,
+                timeout: 100000
+            });
+        } else {
+            this.handleLocationError('No geolocation available.', (this.googleMap as google.maps.Map).getCenter());
+        }
     }
 
     /**
@@ -237,8 +250,6 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
      */
     private populateMap = (position) => {
         // TODO: why is this being called twice at page load
-
-        console.log("POPULATE MAP")
 
         this.clearMarkers();
 
@@ -281,15 +292,15 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
 
                                 //Initiates the content of the info window
                                 const infoWindow = new google.maps.InfoWindow({
-                                    maxWidth: 200, 
-                                    content: place.name +'<br/>'+ 
-                                    "RATING: " + place.rating +'<br/>'+ 
-                                    "OPEN: " 
-                                    + 
-                                    ((place.opening_hours !== undefined) ? 
-                                        (place.opening_hours as google.maps.places.OpeningHours).open_now 
-                                        : "N/A")      
-                                    +'<br/>'+ 
+                                    maxWidth: 200,
+                                    content: place.name +'<br/>'+
+                                    "RATING: " + place.rating +'<br/>'+
+                                    "OPEN: "
+                                    +
+                                    ((place.opening_hours !== undefined) ?
+                                        (place.opening_hours as google.maps.places.OpeningHours).open_now
+                                        : "N/A")
+                                    +'<br/>'+
                                     "PRICE LEVEL(out of 5): " + place.price_level +'<br/>'+
                                     "ADDRESS: " + place.vicinity
                                 });
@@ -341,9 +352,9 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
      * Render the JSX template on the DOM
      */
     render() {
-        // if (true) {
-        //     return <Redirect to="/login"></Redirect>
-        // }
+        if (!this.props.isLoggedIn) {
+            return <Redirect to="/login"></Redirect>
+        } else { console.log("HI")}
         return (
             <div style={{height: "100%"}}>
                 <div style={{height: "15%"}}>
@@ -362,6 +373,7 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
  */
 const mapStateToProps = (state, ownProps) => {
     return {
+        isLoggedIn: state.authentication.isLoggedIn,
         locationName: state.location.locationName,
         radius: state.radius,
         placeTypesSelected: Object.keys(state.placeTypes)
