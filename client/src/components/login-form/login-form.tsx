@@ -1,13 +1,34 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { Button } from "react-bootstrap";
+import { loginFormSubmitted } from "./actions";
+
+interface ILoginFormProps {
+    dispatch: (action) => void,
+    username: string,
+    password: string,
+}
+
+interface ILoginFormState {
+    toMapFrame: boolean
+    username: string,
+    password: string,
+    formValid: boolean
+}
 
 /**
  * 
  */
-class LoginForm extends Component<{ }, { }> {
+class LoginForm extends Component<ILoginFormProps, ILoginFormState> {
     
+    state: ILoginFormState = {
+        toMapFrame: false,
+        username: "",
+        password: "",
+        formValid: false
+    }
+
     constructor(props) {
         /** call Component constructor, passing in props */
         super(props);
@@ -17,26 +38,68 @@ class LoginForm extends Component<{ }, { }> {
      * called when user clicks submit button
      */
     private submitForm = (): void => {
-
-
+        const loginRequestInfo = {
+            username: this.state.username,
+            password: this.state.password
+        }
 
         fetch("/login", {
             method: "POST",
-            body: JSON.stringify({ })
-        }).then((response) => { console.log(response); });
-    
-    
-    
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(loginRequestInfo)
+        }).then((response) => { 
+            if (response.status === 200) {
+                this.setState({
+                    toMapFrame: true
+                });
+                return response.json();
+            } else {
+                // TODO: handle failed login
+                return response.json();
+            }
+        }).then((data) => {
+            this.props.dispatch(loginFormSubmitted({
+                username: data.username
+            }));
+        });
+    }
+
+    private usernameChanged = (evt: { target: { value: string } }): void => {
+        this.setState({
+            username: evt.target.value
+        }, this.validate);
+    }
+
+    private passwordChanged = (evt: { target: { value: string } }): void => {
+        this.setState({
+            password: evt.target.value
+        }, this.validate);
+    }
+
+    private validate = (): void => {
+        if (this.state.username.length > 0
+         && this.state.password.length > 0) {
+            this.setState({
+                formValid: true
+            });
+        } else {
+            this.setState({
+                formValid: false
+            });
+        }
     }
 
     /**
      * React lifecycle hook implementation which is triggered when the component mounts
      *  on the DOM
-     *  - populates component state
-     *      - puts current location name in search input field
+     *  - populates component state     
      */
     componentDidMount(): void {
-        
+        this.setState({
+            username: this.props.username
+        });
     }
 
     /**
@@ -47,11 +110,18 @@ class LoginForm extends Component<{ }, { }> {
      * @param prevPropSnapshot a snapshot of the components props before update
      */
     componentDidUpdate(prevPropSnapshot): void {
-        
+        if (this.props.username !== prevPropSnapshot.username) {
+            this.setState({
+                username: this.props.username
+            })
+        }
     }
 
     // TODO: implement validation
     render() {
+        if (this.state.toMapFrame) {
+            return <Redirect to="/"></Redirect>
+        }
         return(            
             <div className="container" style={{height: "100%", width: "48%"}}>
                 
@@ -61,16 +131,18 @@ class LoginForm extends Component<{ }, { }> {
                         <span className="flex-row" style={{width: "25%", justifyContent: "flex-end"}}>
                             Username
                         </span>
-                        <input className="form-control" type="text" style={{width: "66%"}}></input>
+                        <input className="form-control" type="text" style={{width: "66%"}}
+                            onChange={this.usernameChanged}></input>
                     </div>
                     <div className="flex-row" style={{justifyContent: "space-between"}}>
                         <span className="flex-row" style={{width: "25%", justifyContent: "flex-end"}}>
                             Password
                         </span>
-                        <input className="form-control" type="password" style={{width: "66%"}}></input>
+                        <input className="form-control" type="password" style={{width: "66%"}}
+                            onChange={this.passwordChanged}></input>
                     </div>
                     <div className="flex-row" style={{justifyContent: "flex-end"}}>
-                        <Button variant="primary" onClick={this.submitForm} style={{width: "66%"}}>
+                        <Button variant="primary" disabled={!this.state.formValid} onClick={this.submitForm} style={{width: "66%"}}>
                             Log In
                         </Button>
                     </div>
@@ -92,7 +164,7 @@ class LoginForm extends Component<{ }, { }> {
  */
 const mapStateToProps = (state, ownProps) => {
     return {
-
+        username: state.authentication.username
     };
 }
 

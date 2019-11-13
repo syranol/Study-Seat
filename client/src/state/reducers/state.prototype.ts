@@ -26,6 +26,8 @@ export const statePrototype = {
      * login / authentication
      */
     authentication: {
-        
+        isLoggedIn: false,
+        username: null,
+        token: null
     }
 };

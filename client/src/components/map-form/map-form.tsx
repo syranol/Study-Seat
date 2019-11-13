@@ -61,7 +61,7 @@ class MapForm extends Component<IMapFormProps, { }> {
      * Called when a place type is selected or unselected (checkbox toggled)
      * @param evt the DOM event emitted by the click event
      */
-    placeTypeSelected = (evt: { target: { id: string, checked: boolean } }): void => {
+    placeTypeToggled = (evt: { target: { id: string, checked: boolean } }): void => {
         /**
          * dispatches a particular action to the Redux store depending on the type of checkbox toggled
          */
@@ -162,7 +162,7 @@ class MapForm extends Component<IMapFormProps, { }> {
                                 id={`${placeType}`}
                                 label={`${placeType}`.replace("_", " ")}
                                 checked={this.props[placeType]}
-                                onChange={this.placeTypeSelected}/>
+                                onChange={this.placeTypeToggled}/>
                             </div>
                     ))}
                     

@@ -2,10 +2,13 @@
 import { statePrototype } from "./state.prototype";
 import { 
     CAFE_CHECKBOX_TOGGLED, LIBRARY_CHECKBOX_TOGGLED, LOCATION_FORM_SUBMITTED, BOOK_STORE_CHECKBOX_TOGGLED 
-} from "../../components/map-form/actions";
+} from "components/map-form/actions";
 import { 
     GEOLOCATION_CHANGED, LOCATION_NAME_UPDATED 
 } from "components/map-frame/actions";
+import { 
+    LOGIN_FORM_SUBMITTED
+} from "components/login-form/actions";
 import {
     INITIALIZE
 } from "../actions/initialize.action";
@@ -72,6 +75,15 @@ export default function rootReducer(previousState, action) {
                     geolocation: action.payload
                 })
             });
+        }
+        case LOGIN_FORM_SUBMITTED: {
+            const newState = Object.assign({ } , previousState);
+            Object.keys(action.payload).forEach((x) => {
+                Object.assign(newState.authentication, {
+                    [x]: action.payload[x]
+                });
+            });
+            return newState;
         }
         case INITIALIZE: {
             /** handle the initialization action (dispatched at startup) */

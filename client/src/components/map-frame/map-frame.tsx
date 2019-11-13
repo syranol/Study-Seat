@@ -91,15 +91,26 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
         if (this.props.locationName !== prevPropSnapshot.locationName) {
             locationChanged = true;
         }
-        if (this.props.placeTypesSelected !== prevPropSnapshot.placeTypesSelected) {
-            placesSelectedChanged = true;
-        }
+
+        this.props.placeTypesSelected.forEach(x => {
+            if (!prevPropSnapshot.placeTypesSelected.some(y => y === x)) {
+                placesSelectedChanged = true;
+            }
+        });
+        prevPropSnapshot.placeTypesSelected.forEach(x => {
+            if (!this.props.placeTypesSelected.some(y => y === x)) {
+                placesSelectedChanged = true;
+            }
+        });
+
         /**
          * if relevant changes occurred, placesService is defined, and method not currently debounced,
          *  get new geolocation from new location name
          */
         if (locationChanged || placesSelectedChanged) {
             if (this.placesService && !this.debounceComponentDidUpdate) {
+
+                console.log("NEW REQUEST")
 
                 /**
                  * Debounce componentDidUpdate (causes the if statement not to execute again until
@@ -227,6 +238,8 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
     private populateMap = (position) => {
         // TODO: why is this being called twice at page load
 
+        console.log("POPULATE MAP")
+
         this.clearMarkers();
 
         this.props.placeTypesSelected.map((type) => {
@@ -257,25 +270,33 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
                                  * Place a new marker on map, and store a reference to it in this.markers
                                  */
 
-                                 const newMarker = new google.maps.Marker({
+                                const newMarker = new google.maps.Marker({
                                     map: this.googleMap,
                                     title: place.name,
                                     position: place.geometry.location
-                                 });
+                                });
 
-                                 //Initiates the content of the info window
-                                 const infoWindow = new google.maps.InfoWindow({
+                                (this.markers as google.maps.Marker[]).push(newMarker);
+
+
+                                //Initiates the content of the info window
+                                const infoWindow = new google.maps.InfoWindow({
                                     maxWidth: 200, 
-                                   content: place.name +'<br/>'+ 
-                                   "RATING: " + place.rating +'<br/>'+ 
-                                   "OPEN: " + (place.opening_hours as any).open_now +'<br/>'+ 
-                                   "PRICE LEVEL(out of 5): " + place.price_level +'<br/>'+
-                                   "ADDRESS: " + place.vicinity
-                                 });
+                                    content: place.name +'<br/>'+ 
+                                    "RATING: " + place.rating +'<br/>'+ 
+                                    "OPEN: " 
+                                    + 
+                                    ((place.opening_hours !== undefined) ? 
+                                        (place.opening_hours as google.maps.places.OpeningHours).open_now 
+                                        : "N/A")      
+                                    +'<br/>'+ 
+                                    "PRICE LEVEL(out of 5): " + place.price_level +'<br/>'+
+                                    "ADDRESS: " + place.vicinity
+                                });
 
                                 //Listener so only clicked marker will show info
                                 newMarker.addListener("click", () => {
-                                  infoWindow.open(this.googleMap, newMarker);
+                                    infoWindow.open(this.googleMap, newMarker);
                                 });
 
                                 //google.maps.event.addListener(newMarker, 'click', )
@@ -302,6 +323,7 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
             for (const marker of this.markers) {
                 marker.setMap(null);
             }
+            this.markers = []
         }
     }
 

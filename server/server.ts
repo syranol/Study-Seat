@@ -24,7 +24,7 @@ export class StudySeatServer extends Express {
         });
 
         this.use(require("body-parser").json());
-        this.use(Express.urlencoded({ extended: false }))
+        // this.use(Express.urlencoded({ extended: false }))
 
         this.use(Express.static(this.clientBundlePath));
 
@@ -44,13 +44,32 @@ export class StudySeatServer extends Express {
         });
 
         this.post("/login", (req: any, res: any) => {
-            console.log("LOGIN ROUTE TRIGGERED");
-            res.end();
+
+            if ((req.body.username === "a" && req.body.password === "a")
+             || (req.body.username === "b" && req.body.password === "b")) {
+
+                res.status(200).json({
+                    username: req.body.username
+                });
+            } else {
+                res.status(401).error("Bad password")
+            }
+            
+
         });
 
         this.post("/register", (req: any, res: any) => {
-            console.log("REGISTER ROUTE TRIGGERED");
-            res.redirect("/login");
+            if (req.body.username === "c") {
+                res.status(401).json("Bad username")
+            }
+            
+
+
+
+            res.status(200).json({
+                username: req.body.username,
+            });
+
             // try {
             //     Bcrypt.hash(req.body.password, 20).then((passwordHash: any) => {
 
