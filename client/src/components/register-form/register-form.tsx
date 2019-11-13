@@ -12,7 +12,7 @@ interface IRegisterFormProps {
 }
 
 interface IRegisterFormState {
-    toLogin: boolean,
+    toMapFrame: boolean,
     username: string,
     email: string
     password: string,
@@ -22,12 +22,12 @@ interface IRegisterFormState {
 }
 
 /**
- * 
+ *
  */
 class RegisterForm extends Component<IRegisterFormProps, IRegisterFormState> {
-    
+
     state: IRegisterFormState = {
-        toLogin: false,
+        toMapFrame: false,
         username: "",
         email: "",
         password: "",
@@ -62,12 +62,14 @@ class RegisterForm extends Component<IRegisterFormProps, IRegisterFormState> {
         }).then((data) => {
             console.log(data);
 
+            // TODO: registration should automatically log in
+
             this.props.dispatch(registerFormSubmitted({
-                username: data.username    
+                username: data.username
             }));
 
             this.setState({
-                toLogin: true
+                toMapFrame: true
             });
         });
 
@@ -164,14 +166,15 @@ class RegisterForm extends Component<IRegisterFormProps, IRegisterFormState> {
     }
 
     render() {
-        if (this.state.toLogin) {
-            return <Redirect to="/login"></Redirect>
+        if (this.state.toMapFrame) {
+            setTimeout(() => window.location.reload(), 10);
+            return <Redirect to="/"></Redirect>
         }
 
-        return(            
+        return(
             <div className="container" style={{height: "100%", width: "48%"}}>
             <form className="flex-column" style={{height: "26%", justifyContent: "space-around"}}>
-            
+
                 <h3>Register</h3>
                 <div className="flex-row" style={{justifyContent: "space-between"}}>
                     <span className="flex-row" style={{width: "30%", justifyContent: "flex-end"}}>
@@ -208,7 +211,7 @@ class RegisterForm extends Component<IRegisterFormProps, IRegisterFormState> {
                 </div>
                 <div className="flex-row" style={{justifyContent: "flex-end"}}>
                     <span style={{width:"50%"}}>
-                        Already registered? 
+                        Already registered?
                     </span>
                     <Link to="/login">Log in</Link>
                 </div>
