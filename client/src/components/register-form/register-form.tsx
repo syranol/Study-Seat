@@ -167,6 +167,8 @@ class RegisterForm extends Component<IRegisterFormProps, IRegisterFormState> {
 
     render() {
         if (this.state.toMapFrame) {
+            // TODO: figure out a way to make it unnecessary to always reload, can MapFrame
+            //          detect when map does not appear?
             setTimeout(() => window.location.reload(), 10);
             return <Redirect to="/"></Redirect>
         }

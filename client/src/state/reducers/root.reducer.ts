@@ -12,7 +12,7 @@ import {
 import {
     LOGOUT_SUBMITTED
 } from "../actions/logout.action";
-import { REGISTER_FORM_SUBMITTED } from '../../components/register-form/actions';
+import { REGISTER_FORM_SUBMITTED } from 'components/register-form/actions';
 import {
     INITIALIZE
 } from "../actions/initialize.action";
