@@ -1,17 +1,18 @@
 
 import { statePrototype } from "./state.prototype";
-import { 
-    CAFE_CHECKBOX_TOGGLED, LIBRARY_CHECKBOX_TOGGLED, LOCATION_FORM_SUBMITTED, BOOK_STORE_CHECKBOX_TOGGLED 
+import {
+    CAFE_CHECKBOX_TOGGLED, LIBRARY_CHECKBOX_TOGGLED, LOCATION_FORM_SUBMITTED, BOOK_STORE_CHECKBOX_TOGGLED
 } from "components/map-form/actions";
-import { 
-    GEOLOCATION_CHANGED, LOCATION_NAME_UPDATED 
+import {
+    GEOLOCATION_CHANGED, LOCATION_NAME_UPDATED
 } from "components/map-frame/actions";
-import { 
+import {
     LOGIN_FORM_SUBMITTED
 } from "components/login-form/actions";
 import {
     LOGOUT_SUBMITTED
 } from "../actions/logout.action";
+import { REGISTER_FORM_SUBMITTED } from 'components/register-form/actions';
 import {
     INITIALIZE
 } from "../actions/initialize.action";
@@ -65,7 +66,7 @@ export default function rootReducer(previousState, action) {
             /** update location name */
             const prevLoc = previousState.location;
             return Object.assign({ }, previousState, {
-                location: Object.assign(prevLoc, { 
+                location: Object.assign(prevLoc, {
                     locationName: action.payload
                 })
             });
@@ -79,7 +80,8 @@ export default function rootReducer(previousState, action) {
                 })
             });
         }
-        case LOGIN_FORM_SUBMITTED: {
+        case LOGIN_FORM_SUBMITTED:
+        case REGISTER_FORM_SUBMITTED: {
             const newState = Object.assign({ } , previousState);
             Object.keys(action.payload).forEach((x) => {
                 Object.assign(newState.authentication, {
@@ -92,7 +94,6 @@ export default function rootReducer(previousState, action) {
             return newState;
         }
         case LOGOUT_SUBMITTED: {
-            
             if (action.payload) {
                 const newState = Object.assign({ }, previousState);
                 Object.assign(newState.authentication, {
