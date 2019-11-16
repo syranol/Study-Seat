@@ -61,7 +61,7 @@ class MapForm extends Component<IMapFormProps, { }> {
      * Called when a place type is selected or unselected (checkbox toggled)
      * @param evt the DOM event emitted by the click event
      */
-    placeTypeSelected = (evt: { target: { id: string, checked: boolean } }): void => {
+    placeTypeToggled = (evt: { target: { id: string, checked: boolean } }): void => {
         /**
          * dispatches a particular action to the Redux store depending on the type of checkbox toggled
          */
@@ -129,44 +129,45 @@ class MapForm extends Component<IMapFormProps, { }> {
     }
 
     render() {
+        // TODO: if not logged in, redirect to login page
         return(            
-        <div className="container" style={{width:"46%"}}>
-            <div className="flex-row" style={{
-                    alignItems: "center", 
-                    justifyContent: "space-around",
-                }}>
-                <div>
-                    <h5>I'm in</h5>
+            <div className="container" style={{width:"38%"}}>
+                <div className="flex-row" style={{
+                        alignItems: "center", 
+                        justifyContent: "space-around",
+                    }}>
+                    <div>
+                        <h5>I'm in</h5>
+                    </div>
+                    <div>
+                        <input className="form-control" type="text" value={this.state.searchStr}
+                            onChange={this.locationInputChanged}></input>
+                    </div>
+                    <div>
+                        <Button variant="primary" onClick={this.submitForm}>
+                            Submit
+                        </Button>
+                    </div>
                 </div>
-                <div>
-                    <input className="form-control" type="text" value={this.state.searchStr}
-                        onChange={this.locationInputChanged}></input>
+                <div className="flex-row" style={{
+                        alignItems: "center", 
+                        justifyContent: "space-around",
+                        height: "100px"
+                    }}>   
+                    <h5>looking for a </h5>
+                    {this.placeTypeOptions.map((placeType: string) => (
+                        <div key={`opt-${placeType}`} className="mb-3">
+                            <Form.Check 
+                                type="checkbox"
+                                id={`${placeType}`}
+                                label={`${placeType}`.replace("_", " ")}
+                                checked={this.props[placeType]}
+                                onChange={this.placeTypeToggled}/>
+                            </div>
+                    ))}
+                    
                 </div>
-                <div>
-                    <Button variant="primary" onClick={this.submitForm}>
-                        Submit
-                    </Button>
-                </div>
-            </div>
-            <div className="flex-row" style={{
-                    alignItems: "center", 
-                    justifyContent: "space-around",
-                    height: "100px"
-                }}>   
-                <h5>looking for a </h5>
-                {this.placeTypeOptions.map((placeType: string) => (
-                    <div key={`opt-${placeType}`} className="mb-3">
-                        <Form.Check 
-                            type="checkbox"
-                            id={`${placeType}`}
-                            label={`${placeType}`.replace("_", " ")}
-                            checked={this.props[placeType]}
-                            onChange={this.placeTypeSelected}/>
-                        </div>
-                ))}
-                
-            </div>
-    </div>)
+            </div>)
     }
 }
 

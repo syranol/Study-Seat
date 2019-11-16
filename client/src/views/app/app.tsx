@@ -1,8 +1,15 @@
 import React, { Component } from 'react';
+import {
+    Switch, Route, HashRouter
+} from "react-router-dom";
+import { Button } from "react-bootstrap";
 import './app.scss';
-import MapFrame from '../../components/map-frame/map-frame';
 import { connect } from "react-redux";
 import { initialize } from 'state/actions/initialize.action';
+import MapFrame from 'components/map-frame/map-frame';
+import LoginForm from 'components/login-form/login-form';
+import RegisterForm from 'components/register-form/register-form';
+import { logoutSubmitted } from 'state/actions/logout.action';
 
 /**
  * This component renders the main view, including the MapFrame
@@ -33,6 +40,10 @@ class App extends Component<any, any> {
         this.props.dispatch(initialize(JSON.parse(cachedState)));
     }
 
+    private logout = () => {
+        this.props.dispatch(logoutSubmitted(true));
+    }
+
     /**
      * render the JSX template
      */
@@ -40,10 +51,23 @@ class App extends Component<any, any> {
         return (
             <div className="App">
                 <header className="jumbotron container">
+                    <div className="flex-row" style={{justifyContent: "flex-end"}}
+                        >
+                        <Button onClick={this.logout}>Log Out</Button>
+                    </div>
                     <h1>StudySeat</h1>
                 </header>
                 <div className="App-body">
-                    <MapFrame />
+                    <HashRouter>
+                        <Switch>
+                            <Route path="/login" component={LoginForm}>
+                            </Route>
+                            <Route path="/register" component={RegisterForm}>
+                            </Route>
+                            <Route path="/" component={MapFrame}>
+                            </Route>
+                        </Switch>
+                    </HashRouter>
                 </div>
             </div>);
     }
