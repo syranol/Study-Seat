@@ -90,9 +90,6 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
 
     constructor(props) {
         super(props);
-        console.log("DID CONSTRUCT")
-
-
     }
 
     // TODO: ideally this debounce could be made obsolete...
@@ -169,7 +166,6 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
      * React lifecycle hook triggered when the component is mounted on the DOM
      */
     async componentDidMount() {
-        console.log("DID MOUNT")
         
         /**
          * when the google maps script loads, create the google map object and info window, instantiate
@@ -354,7 +350,7 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
     render() {
         if (!this.props.isLoggedIn) {
             return <Redirect to="/login"></Redirect>
-        } else { console.log("HI")}
+        } 
         return (
             <div style={{height: "100%"}}>
                 <div style={{height: "15%"}}>

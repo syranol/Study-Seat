@@ -54,6 +54,8 @@ class LoginForm extends Component<ILoginFormProps, ILoginFormState> {
             if (response.status === 200) {
                 this.setState({
                     toMapFrame: true
+                }, () => {
+                    setTimeout(() => window.location.reload(), 1000);
                 });
                 return response.json();
             } else {
@@ -61,8 +63,11 @@ class LoginForm extends Component<ILoginFormProps, ILoginFormState> {
                 return response.json();
             }
         }).then((data) => {
+            console.log("LOGGED IN! " );
+            console.dir(data);
             this.props.dispatch(loginFormSubmitted({
-                username: data.username
+                username: data.username,
+                token: data.token
             }));
 
         });
@@ -128,8 +133,6 @@ class LoginForm extends Component<ILoginFormProps, ILoginFormState> {
     // TODO: implement validation
     render() {
         if (this.state.toMapFrame) {
-            console.log("TO MAP FRAME!")
-            setTimeout(() => window.location.reload(), 10)
             return <Redirect to="/"></Redirect>
         }
         return(            

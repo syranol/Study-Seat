@@ -51,7 +51,8 @@ class App extends Component<any, any> {
         return (
             <div className="App">
                 <header className="jumbotron container">
-                    <div className="flex-row" style={{justifyContent: "flex-end"}}>
+                    <div className="flex-row" style={{justifyContent: "flex-end"}}
+                        >
                         <Button onClick={this.logout}>Log Out</Button>
                     </div>
                     <h1>StudySeat</h1>

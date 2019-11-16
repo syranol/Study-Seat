@@ -3,22 +3,9 @@ import { IHttpRequest, IHttpResponse } from '../lib/interface/http.interface';
 import * as request from "request";
 
 const Express = require("express");
-const Bcrypt = require("bcrypt");
 const BodyParser = require("body-parser");
 
-
-
-
-const users: any[] = [];
-
-
-
-
 export class StudySeatServer extends Express {
-
-
-
-
     private clientBundlePath = join(__dirname, "../client");
     // private clientBundlePath = join(process.cwd(), "client/build");
     constructor() {
@@ -63,56 +50,40 @@ export class StudySeatServer extends Express {
         });
 
         this.post("/login", (req: any, res: any) => {
-            // if ((req.body.username === "a" && req.body.password === "a")
-            //  || (req.body.username === "b" && req.body.password === "b")) {
-            //     res.status(200).json({
-            //         username: req.body.username
-            //     });
-            // } else {
-            //     res.status(401).error("Bad password")
-            // }
+            /** 
+             * login route takes user name and password to retrieve jwt token
+             */
+            const username = req.body.username;
+            const password = req.body.password;
+            const options = {
+                method: "POST",
+                url: `https://${process.env.AUTH0_DOMAIN}/oauth/token`, 
+                headers: { "content-type": "application/json" },
+                body: {
+                    grant_type: "password",
+                    username: username,
+                    password: password,
 
+                    connection: "Username-Password-Authentication",
+                    client_id: process.env.AUTH0_CLIENT_ID,  
+                    client_secret: process.env.AUTH0_CLIENT_SECRET,
+                },
+                json: true
+            };
 
+            console.log("POSTING LOGIN");
+            console.dir(options)
 
-
-/** 
- * login route takes user name and password to retrieve jwt token
- */
-const username = req.body.username;
-const password = req.body.password;
-const options = {
-    method: "POST",
-    url: `https://${process.env.AUTH0_DOMAIN}/oauth/token`, 
-    headers: { "content-type": "application/json" },
-    body: {
-        grant_type: "password",
-        username: username,
-        password: password,
-
-        connection: "Username-Password-Authentication",
-        client_id: process.env.CLIENT_ID,  
-        client_secret: process.env.CLIENT_SECRET,
-    },
-    json: true
-};
-console.log("SENDIING");
-console.dir(options);
-
-request.post(options, (error: any, response: any, body: any) => {
-    if (error) {
-        console.log("ERR")
-        res.status(500).send(error);
-    } else {
-        console.log("BOD")
-        /** send JWT back */
-        res.send(body)
-    }
-});
-
-
-
-
-
+            request.post(options, (error: any, response: any, body: any) => {
+                console.log("POST RESULT")
+                console.dir(body);
+                if (error) {
+                    res.status(500).send(error);
+                } else {
+                    /** send JWT back */
+                    res.status(200).send({ username: username, token: body })
+                }
+            });
         });
 
         this.post("/register", (req: any, res: any) => {
@@ -121,7 +92,7 @@ request.post(options, (error: any, response: any, body: any) => {
             const email = req.body.email;
             const options = {
                 method: "POST",
-                url: `https://dev-e6vw3oxl.auth0.com/dbconnections/signup`, 
+                url: `https://${process.env.AUTH0_DOMAIN}/dbconnections/signup`, 
                 headers: { "content-type": "application/json" },
                 body: {
                     grant_type: "password",
@@ -133,22 +104,16 @@ request.post(options, (error: any, response: any, body: any) => {
                     verify_email: false, 
                     app_metadata: {},
                     connection: "Username-Password-Authentication",
-                    client_id: process.env.CLIENT_ID,  
-                    client_secret: process.env.CLIENT_SECRET
+                    client_id: process.env.AUTH0_CLIENT_ID,  
+                    client_secret: process.env.AUTH0_CLIENT_SECRET
                 },
                 json: true
             };
-            console.log("REGISTERING");
-            console.dir(options)
             request.post(options, (error: any, response: any, body: any) => {
                 if (error) {
-                    console.log("ERR");
-                    console.dir(error);
                     res.status(500).send(error);
                 } else {
-                    console.log("GOOD");
-                    console.dir(body);
-                    res.status(201).send(body);
+                    res.status(201).send({ username: username, token: body });
                 }
             });
 
