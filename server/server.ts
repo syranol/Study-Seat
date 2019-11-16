@@ -1,9 +1,9 @@
 import { join } from "path";
 import { IHttpRequest, IHttpResponse } from '../lib/interface/http.interface';
+import * as request from "request";
+
 const Express = require("express");
 const Bcrypt = require("bcrypt");
-const Passport = require("passport");
-const PassportInit = require("./passport-init");
 const BodyParser = require("body-parser");
 
 
@@ -13,9 +13,6 @@ const users: any[] = [];
 
 
 
-
-PassportInit(Passport, 
-    (username: any) => users.find((user: any) => user.username === username));
 
 export class StudySeatServer extends Express {
 
@@ -43,17 +40,9 @@ export class StudySeatServer extends Express {
         });
 
         this.use(Express.urlencoded({ extended: false }))
-        // this.use(require("express-flash"));
-        this.use(require("express-session")({
-            secret: process.env.SESSION_SECRET,
-            resave: false,
-            saveUninitialized: false
-        }));
-        this.use(Passport.initialize());
-        this.use(Passport.session());
         
-        this.use(BodyParser.json());
         this.use(BodyParser.urlencoded({ extended: false }));
+        this.use(BodyParser.json());
 
         this.use(Express.static(this.clientBundlePath));
 
@@ -70,77 +59,98 @@ export class StudySeatServer extends Express {
         this.post("/", (req: any, res: any) => {
             console.log(req.body);
             res.end();
+
         });
 
-        this.post("/login", Passport.authenticate("local"), function(req: any, res: any) {
-            console.log(req.user);
-            console.log("UP HERE")
-            // Passport.authenticate("local", (err: any, user: any, info: any) => {
-                console.log("IN HERE")
+        this.post("/login", (req: any, res: any) => {
+            // if ((req.body.username === "a" && req.body.password === "a")
+            //  || (req.body.username === "b" && req.body.password === "b")) {
+            //     res.status(200).json({
+            //         username: req.body.username
+            //     });
+            // } else {
+            //     res.status(401).error("Bad password")
+            // }
 
-                // if (err) { return next(err); }
-                
-                console.log("HERE")
 
-                res.status(200).json({
-                    username: req.body.username
-                });
-            // });
+
+
+/** 
+ * login route takes user name and password to retrieve jwt token
+ */
+const username = req.body.username;
+const password = req.body.password;
+const options = {
+    method: "POST",
+    url: `https://${process.env.AUTH0_DOMAIN}/oauth/token`, 
+    headers: { "content-type": "application/json" },
+    body: {
+        grant_type: "password",
+        username: username,
+        password: password,
+
+        connection: "Username-Password-Authentication",
+        client_id: process.env.CLIENT_ID,  
+        client_secret: process.env.CLIENT_SECRET,
+    },
+    json: true
+};
+console.log("SENDIING");
+console.dir(options);
+
+request.post(options, (error: any, response: any, body: any) => {
+    if (error) {
+        console.log("ERR")
+        res.status(500).send(error);
+    } else {
+        console.log("BOD")
+        /** send JWT back */
+        res.send(body)
+    }
+});
+
+
+
+
+
         });
-
-        // this.post("/login", (req: any, res: any) => {
-        //     if ((req.body.username === "a" && req.body.password === "a")
-        //      || (req.body.username === "b" && req.body.password === "b")) {
-        //         res.status(200).json({
-        //             username: req.body.username
-        //         });
-        //     } else {
-        //         res.status(401).error("Bad password")
-        //     }
-        // });
 
         this.post("/register", (req: any, res: any) => {
-            if (req.body.username === "c") {
-                res.status(401).json("Bad username")
-            }
-            
-            Bcrypt.hash(req.body.password, 10).then((passwordHashed: string) => {
-                users.push({
-                    username: req.body.username,
-                    email: req.body.email,
-                    password: passwordHashed
-                });
-                console.log(users);
-                res.status(200).json({
-                    username: req.body.username,
-                });
-            }).catch((err: Error) => {
-                console.error(err);
-                res.send(err);
+            const username = req.body.username;
+            const password = req.body.password;
+            const email = req.body.email;
+            const options = {
+                method: "POST",
+                url: `https://dev-e6vw3oxl.auth0.com/dbconnections/signup`, 
+                headers: { "content-type": "application/json" },
+                body: {
+                    grant_type: "password",
+                    username: username,
+                    email: email,
+                    password: password,
+                    scope: "openid profile",
+                    email_verified: false, 
+                    verify_email: false, 
+                    app_metadata: {},
+                    connection: "Username-Password-Authentication",
+                    client_id: process.env.CLIENT_ID,  
+                    client_secret: process.env.CLIENT_SECRET
+                },
+                json: true
+            };
+            console.log("REGISTERING");
+            console.dir(options)
+            request.post(options, (error: any, response: any, body: any) => {
+                if (error) {
+                    console.log("ERR");
+                    console.dir(error);
+                    res.status(500).send(error);
+                } else {
+                    console.log("GOOD");
+                    console.dir(body);
+                    res.status(201).send(body);
+                }
             });
-
-
-
-            // try {
-            //     Bcrypt.hash(req.body.password, 20).then((passwordHash: any) => {
-
-            //         // console.dir({
-            //         //     username: req.body.username,
-            //         //     email: req.body.email,
-            //         //     password: req.body.passwordHash
-            //         // });
-
-            //         // /** redirect the user to the login page */
-            //         // res.redirect("/login");
-
-            //         // TODO: validate
-            //         // TODO: put user in database
-            //     });
-
-            // } catch {
-
-            //     res.end();
-            // }
 
         });
     }
