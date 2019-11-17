@@ -4,28 +4,39 @@ import { connect } from "react-redux";
 import { Button } from "react-bootstrap";
 import { loginFormSubmitted } from "./actions";
 
+/**
+ * ILoginFormProps specifies the external props relevant to the LoginForm
+ * @param dispatch is the global Redux dispatch function
+ * @param isLoggedIn indicates whether or not the user is logged in
+ * @param email is the email authentication property from the Redux store
+ */
 interface ILoginFormProps {
     dispatch: (action) => void,
     isLoggedIn: boolean,
-    username: string,
-    password: string,
+    email: string,
 }
 
+/**
+ * ILoginFormState specifies the local state interface for the LoginForm component
+ * @param toMapFrame indicates whether or not to navigate to map frame
+ * @param formValid used to validate the form (and enable/disable submit)
+ */
 interface ILoginFormState {
     toMapFrame: boolean
-    username: string,
+    email: string,
     password: string,
     formValid: boolean
 }
 
 /**
- * 
+ * LoginForm provides an interface for existing users to log in
  */
 class LoginForm extends Component<ILoginFormProps, ILoginFormState> {
-    
+
+    /** initialize local component state */
     state: ILoginFormState = {
         toMapFrame: false,
-        username: "",
+        email: "",
         password: "",
         formValid: false
     }
@@ -40,53 +51,62 @@ class LoginForm extends Component<ILoginFormProps, ILoginFormState> {
      */
     private submitForm = (): void => {
         const loginRequestInfo = {
-            username: this.state.username,
+            email: this.state.email,
             password: this.state.password
         }
 
+        /** make a POST request to login endpoint to retrieve JWT token */
         fetch("/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(loginRequestInfo)
-        }).then((response) => { 
+        }).then(async (response) => { 
             if (response.status === 200) {
+                /** success, parse response */
+                const responseJson = await response.json();
                 this.setState({
+                    /** navigate to map frame */
                     toMapFrame: true
                 }, () => {
+                    /** dispatch update to Redux state */
+                    this.props.dispatch(loginFormSubmitted({
+                        email: responseJson.email,
+                        token: responseJson.token
+                    }));
+                    /** force a page reload */
                     setTimeout(() => window.location.reload(), 1000);
                 });
-                return response.json();
-            } else {
+            } else if (response.status === 500) {
                 // TODO: handle failed login
-                return response.json();
             }
-        }).then((data) => {
-            console.log("LOGGED IN! " );
-            console.dir(data);
-            this.props.dispatch(loginFormSubmitted({
-                username: data.username,
-                token: data.token
-            }));
-
         });
     }
 
-    private usernameChanged = (evt: { target: { value: string } }): void => {
+    /**
+     * event handler which handles the event that the text in the email input box has changed
+     */
+    private emailChanged = (evt: { target: { value: string } }): void => {
         this.setState({
-            username: evt.target.value
+            email: evt.target.value
         }, this.validate);
     }
 
+    /**
+     * event handler which handles the event that text in the password input box has changed
+     */
     private passwordChanged = (evt: { target: { value: string } }): void => {
         this.setState({
             password: evt.target.value
         }, this.validate);
     }
 
+    /**
+     * run form validation (called from event handlers)
+     */
     private validate = (): void => {
-        if (this.state.username.length > 0
+        if (this.state.email.length > 0
          && this.state.password.length > 0) {
             this.setState({
                 formValid: true
@@ -105,7 +125,7 @@ class LoginForm extends Component<ILoginFormProps, ILoginFormState> {
      */
     componentDidMount(): void {
         this.setState({
-            username: this.props.username
+            email: this.props.email
         });
 
         if (this.props.isLoggedIn) {
@@ -123,9 +143,9 @@ class LoginForm extends Component<ILoginFormProps, ILoginFormState> {
      * @param prevPropSnapshot a snapshot of the components props before update
      */
     componentDidUpdate(prevPropSnapshot): void {
-        if (this.props.username !== prevPropSnapshot.username) {
+        if (this.props.email !== prevPropSnapshot.email) {
             this.setState({
-                username: this.props.username
+                email: this.props.email
             })
         }
     }
@@ -142,10 +162,10 @@ class LoginForm extends Component<ILoginFormProps, ILoginFormState> {
                     <h3>Log In</h3>
                     <div className="flex-row" style={{justifyContent: "space-between"}}>
                         <span className="flex-row" style={{width: "25%", justifyContent: "flex-end"}}>
-                            Username
+                            Email
                         </span>
-                        <input className="form-control" type="text" style={{width: "66%"}}
-                            onChange={this.usernameChanged}></input>
+                        <input className="form-control" type="email" style={{width: "66%"}}
+                            onChange={this.emailChanged}></input>
                     </div>
                     <div className="flex-row" style={{justifyContent: "space-between"}}>
                         <span className="flex-row" style={{width: "25%", justifyContent: "flex-end"}}>
@@ -177,7 +197,7 @@ class LoginForm extends Component<ILoginFormProps, ILoginFormState> {
  */
 const mapStateToProps = (state, ownProps) => {
     return {
-        username: state.authentication.username,
+        email: state.authentication.email,
         isLoggedIn: state.authentication.isLoggedIn
     };
 }

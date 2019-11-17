@@ -98,7 +98,7 @@ export default function rootReducer(previousState, action) {
                 const newState = Object.assign({ }, previousState);
                 Object.assign(newState.authentication, {
                     isLoggedIn: false,
-                    username: null,
+                    email: null,
                     token: null
                 })
                 return newState;

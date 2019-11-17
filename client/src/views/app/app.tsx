@@ -11,10 +11,21 @@ import LoginForm from 'components/login-form/login-form';
 import RegisterForm from 'components/register-form/register-form';
 import { logoutSubmitted } from 'state/actions/logout.action';
 
+interface IAppComponentProps {
+    isLoggedIn: boolean,
+    dispatch: (action) => void
+}
+
+interface IAppComponentState {
+    
+}
+
 /**
  * This component renders the main view, including the MapFrame
  */
-class App extends Component<any, any> {
+class App extends Component<IAppComponentProps, IAppComponentState> {
+
+    public state: IAppComponentState = { }
 
     constructor(props) {
         super(props);
@@ -51,10 +62,14 @@ class App extends Component<any, any> {
         return (
             <div className="App">
                 <header className="jumbotron container">
-                    <div className="flex-row" style={{justifyContent: "flex-end"}}
-                        >
-                        <Button onClick={this.logout}>Log Out</Button>
-                    </div>
+                    {/* if logged in, render log out button */}
+                    {
+                        this.props.isLoggedIn ? (
+                            <div className="flex-row" style={{justifyContent: "flex-end"}}>
+                                <Button onClick={this.logout}>Log Out</Button>
+                            </div>
+                        ) : ( "" )
+                    }
                     <h1>StudySeat</h1>
                 </header>
                 <div className="App-body">
@@ -74,7 +89,16 @@ class App extends Component<any, any> {
 }
 
 /**
+ * Map Redux state values to component props
+ */
+const mapStateToProps = (state, ownProps) => {
+    return {
+        isLoggedIn: state.authentication.isLoggedIn
+    }
+}
+
+/**
  * connect() allows components to connect to the global redux datastore
  *  - can map properties from store state to component props
  */
-export default connect(null, null)(App);
+export default connect(mapStateToProps, null)(App);

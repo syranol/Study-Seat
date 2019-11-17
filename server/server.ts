@@ -53,7 +53,7 @@ export class StudySeatServer extends Express {
             /** 
              * login route takes user name and password to retrieve jwt token
              */
-            const username = req.body.username;
+            const email = req.body.email;
             const password = req.body.password;
             const options = {
                 method: "POST",
@@ -61,7 +61,8 @@ export class StudySeatServer extends Express {
                 headers: { "content-type": "application/json" },
                 body: {
                     grant_type: "password",
-                    username: username,
+                    username: email,
+                    email: email,
                     password: password,
 
                     connection: "Username-Password-Authentication",
@@ -71,23 +72,19 @@ export class StudySeatServer extends Express {
                 json: true
             };
 
-            console.log("POSTING LOGIN");
-            console.dir(options)
-
             request.post(options, (error: any, response: any, body: any) => {
-                console.log("POST RESULT")
-                console.dir(body);
                 if (error) {
                     res.status(500).send(error);
+                } else if (body.hasOwnProperty("error")) {
+                    res.status(500).send(body);
                 } else {
                     /** send JWT back */
-                    res.status(200).send({ username: username, token: body })
+                    res.status(200).send({ email: email, token: body })
                 }
             });
         });
 
         this.post("/register", (req: any, res: any) => {
-            const username = req.body.username;
             const password = req.body.password;
             const email = req.body.email;
             const options = {
@@ -96,7 +93,7 @@ export class StudySeatServer extends Express {
                 headers: { "content-type": "application/json" },
                 body: {
                     grant_type: "password",
-                    username: username,
+                    username: email,
                     email: email,
                     password: password,
                     scope: "openid profile",
@@ -110,10 +107,14 @@ export class StudySeatServer extends Express {
                 json: true
             };
             request.post(options, (error: any, response: any, body: any) => {
+                console.dir(body);
                 if (error) {
                     res.status(500).send(error);
                 } else {
-                    res.status(201).send({ username: username, token: body });
+                    res.status(201).send({ 
+                        email: email, 
+                        token: body 
+                    });
                 }
             });
 
