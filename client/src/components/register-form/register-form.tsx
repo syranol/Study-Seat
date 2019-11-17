@@ -4,16 +4,30 @@ import { connect } from "react-redux";
 import { Button } from "react-bootstrap";
 import { registerFormSubmitted } from "./actions";
 
+/**
+ * IRegisterFormProps specifies props passed in externally to RegisterForm component
+ * @param dispatch the Redux dispatch function
+ * @param password password // TODO: need to hash?
+ * @param email user's email (effectively username) 
+ */
 interface IRegisterFormProps {
     dispatch: (action) => void,
-    username: string,
     password: string,
     email: string
 }
 
+/**
+ * IRegisterFormState specifies the local state interface for the RegisterForm
+ * @param toMapFrame indicates whether or not to redirect to map frame (on success)
+ * @param email user's email (functions as username)
+ * @param password currently entered text in password input field
+ * @param passwordCheck currently entered text in password match field
+ * @param passwordsMatch indicates whether or not the previous two fields match
+ * @param formValid is a flag indicating whether or not the form passes validation (and
+ *                  can be submitted)
+ */
 interface IRegisterFormState {
     toMapFrame: boolean,
-    username: string,
     email: string
     password: string,
     passwordCheck: string,
@@ -22,13 +36,13 @@ interface IRegisterFormState {
 }
 
 /**
- *
+ * RegisterForm provides a means to create new user accounts
  */
 class RegisterForm extends Component<IRegisterFormProps, IRegisterFormState> {
 
+    /** initialize local component state */
     state: IRegisterFormState = {
         toMapFrame: false,
-        username: "",
         email: "",
         password: "",
         passwordCheck: "",
@@ -46,48 +60,51 @@ class RegisterForm extends Component<IRegisterFormProps, IRegisterFormState> {
      */
     private submitForm = (): void => {
         const userInfo = {
-            username: this.state.username,
             email: this.state.email,
             password: this.state.password
         }
 
+        /** make a POST request to registration endpoint */
         fetch("/register", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(userInfo)
-        }).then((response) => {
-            return response.json();
-        }).then((data) => {
-            console.log(data);
-
-            // TODO: registration should automatically log in
-
-            this.props.dispatch(registerFormSubmitted({
-                username: data.username
-            }));
-
-            this.setState({
-                toMapFrame: true
-            });
+        }).then(async (response) => {
+            if (response.status === 201) {
+                /** success, parse body */
+                const responseJson = await response.json();
+                this.setState({
+                    /** redirect to map frame */
+                    toMapFrame: true
+                }, () => {
+                    /** dispatch action to set authenticationn state */
+                    this.props.dispatch(registerFormSubmitted({
+                        email: responseJson.email,
+                        token: responseJson.token
+                    }));
+                    /** need to reload the page for redirect to work (toMapFrame) */
+                    setTimeout(() => window.location.reload(), 1000);
+                });
+            } else if (response.status === 500) {
+                // TODO: handle failed registration
+            }
         });
-
     }
 
-    private usernameChanged = (evt: { target: { value: string } }): void => {
-        this.setState({
-            username: evt.target.value
-        }, this.validate);
-    }
-
+    /**
+     * event handler which handles the event that text in the password input box has changed
+     */
     private passwordChanged = (evt: { target: { value: string } }): void => {
         this.setState({
             password: evt.target.value
         }, () => {
+            /** check against passwordCheck */
             if (this.state.password === this.state.passwordCheck
                 && this.state.password.length > 0) {
                 this.setState({
+                    /** set passwordsMatch (used for validation) */
                     passwordsMatch: true
                 }, this.validate);
             } else {
@@ -98,13 +115,18 @@ class RegisterForm extends Component<IRegisterFormProps, IRegisterFormState> {
         });
     }
 
+    /**
+     * event handler which handles the event that text in the passwordCheck input box has changed
+     */
     private passwordCheckChanged = (evt: { target: { value: string } }): void => {
         this.setState({
             passwordCheck: evt.target.value
         }, () => {
+            /** check against password */
             if (this.state.password === this.state.passwordCheck
                 && this.state.password.length > 0) {
                 this.setState({
+                    /** set passwordsMatch (used for validation) */
                     passwordsMatch: true
                 }, () => {
                     this.validate();
@@ -117,15 +139,20 @@ class RegisterForm extends Component<IRegisterFormProps, IRegisterFormState> {
         });
     }
 
+    /**
+     * event handler which handles the event that the text in the email input box has changed
+     */
     private emailChanged = (evt: { target: { value: string } }): void => {
         this.setState({
             email: evt.target.value
         }, this.validate);
     }
 
+    /**
+     * run form validation (called from event handlers)
+     */
     private validate = (): void => {
-        if (this.state.username.length > 0
-         && this.state.password.length > 0
+        if (this.state.password.length > 0
          && this.state.email.length > 0
          && this.state.passwordsMatch) {
             this.setState({
@@ -146,7 +173,7 @@ class RegisterForm extends Component<IRegisterFormProps, IRegisterFormState> {
      */
     componentDidMount(): void {
         this.setState({
-            username: this.props.username
+            email: this.props.email
         });
     }
 
@@ -158,33 +185,23 @@ class RegisterForm extends Component<IRegisterFormProps, IRegisterFormState> {
      * @param prevPropSnapshot a snapshot of the components props before update
      */
     componentDidUpdate(prevPropSnapshot): void {
-        if (this.props.username !== prevPropSnapshot.username) {
+        if (this.props.email !== prevPropSnapshot.email) {
             this.setState({
-                username: this.props.username
-            });
+                email: this.props.email
+            })
         }
     }
 
     render() {
         if (this.state.toMapFrame) {
-            // TODO: figure out a way to make it unnecessary to always reload, can MapFrame
-            //          detect when map does not appear?
-            setTimeout(() => window.location.reload(), 10);
             return <Redirect to="/"></Redirect>
         }
 
         return(
             <div className="container" style={{height: "100%", width: "48%"}}>
-            <form className="flex-column" style={{height: "26%", justifyContent: "space-around"}}>
+            <form className="flex-column" style={{height: "32%", justifyContent: "space-around", alignItems: "space-between"}}>
 
                 <h3>Register</h3>
-                <div className="flex-row" style={{justifyContent: "space-between"}}>
-                    <span className="flex-row" style={{width: "30%", justifyContent: "flex-end"}}>
-                        Username
-                    </span>
-                    <input className="form-control" type="text" style={{width: "66%"}}
-                        onChange={this.usernameChanged}></input>
-                </div>
                 <div className="flex-row" style={{justifyContent: "space-between"}}>
                     <span className="flex-row" style={{width: "30%", justifyContent: "flex-end"}}>
                         Email
@@ -229,7 +246,7 @@ class RegisterForm extends Component<IRegisterFormProps, IRegisterFormState> {
  */
 const mapStateToProps = (state, ownProps) => {
     return {
-        username: state.authentication.username,
+        
     };
 }
 

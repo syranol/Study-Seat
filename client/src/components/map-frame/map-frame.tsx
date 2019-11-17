@@ -171,9 +171,7 @@ class MapFrame extends Component<IMapFrameProps, IMapFrameState> {
          * when the google maps script loads, create the google map object and info window, instantiate
          *  Google services, get current geolocation from browser
          */
-        console.log("A");
         await scriptLoaded();
-        console.log("B")
         this.googleMap = this.createGoogleMap();
         this.infoWindow = new (window as any).google.maps.InfoWindow()
         this.placesService = new google.maps.places.PlacesService(this.googleMap as google.maps.Map);
