@@ -25,7 +25,8 @@ interface ILoginFormState {
     toMapFrame: boolean
     email: string,
     password: string,
-    formValid: boolean
+    formValid: boolean,
+    error: string
 }
 
 /**
@@ -38,7 +39,8 @@ class LoginForm extends Component<ILoginFormProps, ILoginFormState> {
         toMapFrame: false,
         email: "",
         password: "",
-        formValid: false
+        formValid: false,
+        error: ""
     }
 
     constructor(props) {
@@ -80,6 +82,10 @@ class LoginForm extends Component<ILoginFormProps, ILoginFormState> {
                 });
             } else if (response.status === 500) {
                 // TODO: handle failed login
+                
+                this.setState({
+                    error: "Login failed"
+                });
             }
         });
     }
@@ -160,6 +166,12 @@ class LoginForm extends Component<ILoginFormProps, ILoginFormState> {
                 
                 <form className="flex-column" style={{height: "26%", justifyContent: "space-around"}}>
                     <h3>Log In</h3>
+                    <div className="flex-row" style={{
+                            color: "#ff3333",
+                            justifyContent: "flex-end"
+                        }}>
+                        {this.state.error}
+                    </div>
                     <div className="flex-row" style={{justifyContent: "space-between"}}>
                         <span className="flex-row" style={{width: "25%", justifyContent: "flex-end"}}>
                             Email
