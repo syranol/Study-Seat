@@ -16,8 +16,9 @@ code {
 
 /** global color palette */
 :root {
-    --key-lime: #c8e6c8;
+    --key-lime: #d4ffd4;
     --turquoise: #09d3ac;
+    --light-blue: #9af2f5;
     --charcoal: #544e5a;
     --med-gray: #979090;
     --light-gray: #e7e2e2;
@@ -30,7 +31,7 @@ input {
 }
 
 .btn-default {
-    background-color: var(--light-gray)
+    background-color: var(--light-gray);
 }
 
 .flex-container {

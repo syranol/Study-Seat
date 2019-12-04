@@ -136,14 +136,14 @@ class MapForm extends Component<IMapFormProps, { }> {
                         alignItems: "center", 
                         justifyContent: "space-around",
                     }}>
-                    <div>
+                    <div style={{width: "20%"}}>
                         <h5>I'm in</h5>
                     </div>
-                    <div>
+                    <div style={{width: "65%"}}>
                         <input className="form-control" type="text" value={this.state.searchStr}
                             onChange={this.locationInputChanged}></input>
                     </div>
-                    <div>
+                    <div style={{width: "15%"}}>
                         <Button variant="primary" onClick={this.submitForm}>
                             Submit
                         </Button>
