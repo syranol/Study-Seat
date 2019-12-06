@@ -85,7 +85,11 @@ class RegisterForm extends Component<IRegisterFormProps, IRegisterFormState> {
                         token: responseJson.token
                     }));
                     /** need to reload the page for redirect to work (toMapFrame) */
-                    setTimeout(() => window.location.reload(), 1000);
+                    // setTimeout(() => window.location.reload(), 1000);
+                    console.log("Forcing an update to redirect");
+                    setTimeout(() => {
+                        this.forceUpdate();
+                    }, 1000);
                 });
             } else if (response.status === 500) {
                 // TODO: handle failed registration
