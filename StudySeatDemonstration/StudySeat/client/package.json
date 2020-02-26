@@ -1,0 +1,50 @@
+{
+    "name": "client",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "start": "react-scripts start",
+        "compile": "react-scripts build; rm -rf ../build/client; mkdir ../build/client; mv build/* ../build/client/ && rm -rf build",
+        "build": "npm install; npm run compile",
+        "test": "react-scripts test",
+        "eject": "react-scripts eject",
+        "watch": "cra-build-watch"
+    },
+    "eslintConfig": {
+        "extends": "react-app"
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
+    "dependencies": {
+        "@types/google-maps": "^3.2.1",
+        "@types/jest": "24.0.19",
+        "@types/node": "12.11.1",
+        "@types/react": "16.9.9",
+        "@types/react-dom": "16.9.2",
+        "bootstrap": "^4.3.1",
+        "jquery": "^3.4.1",
+        "node-sass": "^4.12.0",
+        "popper.js": "^1.16.0",
+        "react": "^16.10.2",
+        "react-bootstrap": "^1.0.0-beta.14",
+        "react-dom": "^16.10.2",
+        "react-redux": "^7.1.3",
+        "react-router": "^5.1.2",
+        "react-router-dom": "^5.1.2",
+        "react-scripts": "3.2.0",
+        "typescript": "3.6.4"
+    },
+    "devDependencies": {
+        "cra-build-watch": "^3.0.0"
+    }
+}

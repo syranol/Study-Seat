@@ -1,0 +1,25 @@
+.App {
+    text-align: center;
+    background-color: var(--key-lime);
+    min-height: 100vh;
+    justify-content: center;
+    color: var(--charcoal);
+    padding-bottom: 0;
+    user-select: none; /* This makes all text non-highlightable */
+}
+
+.App-body {
+    height: 82vh;
+}
+
+.App-logo {
+    height: 6vmin;
+}
+
+.jumbotron {
+    background-color: var(--key-lime);
+}
+
+#d {
+    background-color: var(--turquoise);
+}

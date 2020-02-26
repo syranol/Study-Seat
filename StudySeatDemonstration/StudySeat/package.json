@@ -1,0 +1,50 @@
+{
+    "name": "studyseat",
+    "version": "1.0.0",
+    "description": "A website that finds and manages places to study in a particular area by leveraging the Google Maps API",
+    "main": "build/server/index.js",
+    "scripts": {
+        "build": "npm run build-client; npm run build-server",
+        "build-client": "cd client && npm run build",
+        "build-server": "npm install && tsc -p .",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node build/server/index.js",
+        "start-dev": "nodemon --inspect build/server/index.js --watch build --ignore node_modules"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/JohnYoon13/StudySeat.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/JohnYoon13/StudySeat/issues"
+    },
+    "homepage": "https://github.com/JohnYoon13/StudySeat#readme",
+    "devDependencies": {
+        "@types/jwt-decode": "^2.2.1",
+        "@types/request": "^2.48.3",
+        "browser-sync": "^2.26.7",
+        "gulp": "^4.0.2",
+        "gulp-sourcemaps": "^2.6.5",
+        "gulp-typescript": "^5.0.1",
+        "nodemon": "^1.19.4",
+        "ts-node": "^8.4.1",
+        "typescript": "^3.6.4"
+    },
+    "dependencies": {
+        "@types/express": "^4.17.1",
+        "dotenv": "^8.2.0",
+        "express": "^4.17.1",
+        "express-flash": "0.0.2",
+        "express-jwt": "^5.3.1",
+        "express-session": "^1.17.0",
+        "json2html": "0.0.8",
+        "jwks-rsa": "^1.6.0",
+        "jwt-decode": "^2.2.0",
+        "passport-local": "^1.0.0",
+        "redux": "^4.0.4",
+        "request": "^2.88.0",
+        "tslib": "^1.10.0"
+    }
+}

@@ -1,0 +1,36 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "module": "commonjs",
+        "strict": true,
+        "baseUrl": "server",
+        "rootDir": ".",
+        "outDir": "build",
+        "sourceMap": true,
+        "removeComments": true,
+        "experimentalDecorators": true,
+        "target": "es6",
+        "emitDecoratorMetadata": true,
+        "moduleResolution": "node",
+        "importHelpers": true,
+        "strictNullChecks":false,
+        "types": [
+            "node"
+        ],
+        "typeRoots": [
+            "node_modules/@types"
+        ],
+        "paths": {
+            
+        }
+    },
+    
+    "include": [
+        "server",
+        "lib"
+    ],
+    "exclude": [
+        "./server/**/*.spec.ts",
+        "./client/"
+    ]
+}
