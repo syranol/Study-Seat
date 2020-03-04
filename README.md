@@ -2,6 +2,8 @@
 
 Whether it's a café, a library, or even a bookstore, great places nearby to study or to get some work done are only clicks away!
 
+![alt text](https://github.com/syranol/Study-Seat/blob/master/Presentation%20IMG.png)
+
 Utilizing Google Maps and Places API, users are able to dynamically interact with a live map that is complete with info windows that display the up-to-date address, rating, price range, and hours. Furthermore, Study Seat’s website is being hosted on Amazon Web Service, providing constant and reliable up-time. Lastly, user information is authenticated and stored through Auth0 and Study Seat is certified and uses https for more reliable connections. This ensures that the client’s personal information is safe and secure.
 
 
