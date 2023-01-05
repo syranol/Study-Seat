@@ -45,6 +45,6 @@
         "typescript": "3.6.4"
     },
     "devDependencies": {
-        "cra-build-watch": "^3.0.0"
+        "cra-build-watch": "^3.4.0"
     }
 }
